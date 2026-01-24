@@ -6,13 +6,13 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
   Alert,
+  Linking,
   ScrollView,
   StatusBar,
   Text,
   TouchableOpacity,
   View,
 } from "react-native";
-import WebView from "react-native-webview";
 import { recipeDetailStyles } from "../../assets/styles/recipe-detail.styles";
 import LoadingSpinner from "../../components/LoadingSpinner";
 import { API_URL } from "../../constants/api";
@@ -77,10 +77,21 @@ const RecipeDetailScreen = (): React.ReactElement => {
     loadRecipeDetail();
   }, [recipeId, userId]);
 
-  const getYoutubeEmbedUrl = (url: string): string => {
+  const getYoutubeThumbnail = (url: string): string => {
     // example url: https://www.youtube.com/watch?v=dQw4w9WgXcQ
     const videoId = url.split("v=")[1];
-    return `https://www.youtube.com/embed/${videoId}`;
+    return `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
+  };
+
+  const openYoutubeVideo = async (): Promise<void> => {
+    if (!recipe?.youtubeUrl) return;
+
+    try {
+      await Linking.openURL(recipe.youtubeUrl);
+    } catch (error) {
+      console.error("Error opening YouTube video:", error);
+      Alert.alert("Error", "Cannot open video");
+    }
   };
 
   const handleToggleSave = async (): Promise<void> => {
@@ -246,14 +257,38 @@ const RecipeDetailScreen = (): React.ReactElement => {
                 </Text>
               </View>
 
-              <View style={recipeDetailStyles.videoCard}>
-                <WebView
+              {/* VIDEO CARD */}
+              <TouchableOpacity
+                style={recipeDetailStyles.videoCard}
+                onPress={openYoutubeVideo}
+                activeOpacity={0.9}
+              >
+                <Image
+                  source={{ uri: getYoutubeThumbnail(recipe.youtubeUrl) }}
                   style={recipeDetailStyles.webview}
-                  source={{ uri: getYoutubeEmbedUrl(recipe.youtubeUrl) }}
-                  allowsFullscreenVideo
-                  mediaPlaybackRequiresUserAction={false}
+                  contentFit="cover"
                 />
-              </View>
+
+                <View style={recipeDetailStyles.videoOverlay} />
+
+                <View style={recipeDetailStyles.videoPlayButtonContainer}>
+                  <View style={recipeDetailStyles.videoPlayButton}>
+                    <Ionicons
+                      name="play-sharp"
+                      size={24}
+                      color="#FFFFFF"
+                      style={recipeDetailStyles.videoPlayIcon}
+                    />
+                  </View>
+                </View>
+
+                <View style={recipeDetailStyles.videoYoutubeBadge}>
+                  <Ionicons name="logo-youtube" size={20} color="#FF0000" />
+                  <Text style={recipeDetailStyles.videoYoutubeBadgeText}>
+                    Watch on YouTube
+                  </Text>
+                </View>
+              </TouchableOpacity>
             </View>
           )}
 

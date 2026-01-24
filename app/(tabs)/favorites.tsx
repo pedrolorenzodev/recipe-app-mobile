@@ -5,30 +5,34 @@ import {
   Alert,
   FlatList,
   ScrollView,
+  StatusBar,
   Text,
   TouchableOpacity,
   View,
 } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { favoritesStyles } from "../../assets/styles/favorites.styles";
 import LoadingSpinner from "../../components/LoadingSpinner";
 import NoFavoritesFound from "../../components/NoFavoritesFound";
 import RecipeCard from "../../components/RecipeCard";
 import { API_URL } from "../../constants/api";
 import { COLORS } from "../../constants/colors";
+import { FavoriteRecipe } from "../../types";
 
-const FavoritesScreen = () => {
+const FavoritesScreen = (): React.ReactElement => {
   const { signOut } = useClerk();
   const { user } = useUser();
-  const [favoriteRecipes, setFavoriteRecipes] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const { top } = useSafeAreaInsets();
+  const [favoriteRecipes, setFavoriteRecipes] = useState<FavoriteRecipe[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    const loadFavorites = async () => {
+    const loadFavorites = async (): Promise<void> => {
       try {
-        const response = await fetch(`${API_URL}/favorites/${user.id}`);
+        const response = await fetch(`${API_URL}/favorites/${user?.id}`);
         if (!response.ok) throw new Error("Failed to fetch favorites");
 
-        const favorites = await response.json();
+        const favorites: FavoriteRecipe[] = await response.json();
 
         // transform de data to match the RecipeCard component's expected format
         const transformedFavorites = favorites.map((favorite) => ({
@@ -45,18 +49,23 @@ const FavoritesScreen = () => {
       }
     };
     loadFavorites();
-  }, [user.id]);
+  }, [user?.id]);
 
-  const handleSignOut = () => {
+  const handleSignOut = (): void => {
     Alert.alert("Logout", "Are you sure you want to logout?", [
       { text: "Cancel", style: "cancel" },
-      { text: "Logout", style: "destructive", onPress: signOut },
+      {
+        text: "Logout",
+        style: "destructive",
+        onPress: () => signOut(),
+      },
     ]);
   };
 
   if (loading) return <LoadingSpinner message="Loading your favorites..." />;
   return (
-    <View style={favoritesStyles.container}>
+    <View style={{ ...favoritesStyles.container, paddingTop: top }}>
+      <StatusBar hidden={false} />
       <ScrollView showsVerticalScrollIndicator={false}>
         <View style={favoritesStyles.header}>
           <Text style={favoritesStyles.title}>Favorites</Text>
@@ -72,7 +81,7 @@ const FavoritesScreen = () => {
           <FlatList
             data={favoriteRecipes}
             renderItem={({ item }) => <RecipeCard recipe={item} />}
-            keyExtractor={(item) => item.id.toString()}
+            keyExtractor={(item) => (item.id || item.recipeId).toString()}
             numColumns={2}
             columnWrapperStyle={favoritesStyles.row}
             contentContainerStyle={favoritesStyles.recipesGrid}

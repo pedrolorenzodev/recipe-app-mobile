@@ -2,35 +2,39 @@ import { Ionicons } from "@expo/vector-icons";
 import React, { useEffect, useState } from "react";
 import {
   FlatList,
+  StatusBar,
   Text,
   TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { searchStyles } from "../../assets/styles/search.styles";
 import LoadingSpinner from "../../components/LoadingSpinner";
 import RecipeCard from "../../components/RecipeCard";
 import { COLORS } from "../../constants/colors";
 import { useDebounce } from "../../hooks/useDebounce";
 import { MealAPI } from "../../services/mealAPI";
+import { Recipe } from "../../types";
 
-const SearchScreen = () => {
-  const [searchQuery, setSearchQuery] = useState("");
-  const [recipes, setRecipes] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [initialLoading, setInitialLoading] = useState(true);
+const SearchScreen = (): React.ReactElement => {
+  const { top } = useSafeAreaInsets();
+  const [searchQuery, setSearchQuery] = useState<string>("");
+  const [recipes, setRecipes] = useState<Recipe[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [initialLoading, setInitialLoading] = useState<boolean>(true);
 
   const debouncedSearchQuery = useDebounce(searchQuery, 300);
 
-  const performSearch = async (query) => {
+  const performSearch = async (query: string): Promise<Recipe[]> => {
     // if no search query
     if (!query.trim()) {
       const randomMeals = await MealAPI.getRandomMeals(12);
       return randomMeals
         .map((meal) => MealAPI.transformMealData(meal))
-        .filter((meal) => meal !== null);
+        .filter((meal): meal is Recipe => meal !== null);
     }
-    // search by name first, then by infredient if no results
+    // search by name first, then by ingredient if no results
 
     const nameResults = await MealAPI.searchMealsByName(query);
     let results = nameResults;
@@ -43,11 +47,11 @@ const SearchScreen = () => {
     return results
       .slice(0, 12)
       .map((meal) => MealAPI.transformMealData(meal))
-      .filter((meal) => meal !== null);
+      .filter((meal): meal is Recipe => meal !== null);
   };
 
   useEffect(() => {
-    const loadInitialData = async () => {
+    const loadInitialData = async (): Promise<void> => {
       try {
         const results = await performSearch("");
         setRecipes(results);
@@ -64,7 +68,7 @@ const SearchScreen = () => {
   useEffect(() => {
     if (initialLoading) return;
 
-    const handleSearch = async () => {
+    const handleSearch = async (): Promise<void> => {
       setLoading(true);
 
       try {
@@ -83,7 +87,8 @@ const SearchScreen = () => {
   if (initialLoading) return <LoadingSpinner message="Loading recipes..." />;
 
   return (
-    <View style={searchStyles.container}>
+    <View style={{ ...searchStyles.container, paddingTop: top }}>
+      <StatusBar hidden={false} />
       <View style={searchStyles.searchSection}>
         <View style={searchStyles.searchContainer}>
           <Ionicons
@@ -147,7 +152,7 @@ const SearchScreen = () => {
 
 export default SearchScreen;
 
-function NoResultsFound() {
+function NoResultsFound(): React.ReactElement {
   return (
     <View style={searchStyles.emptyState}>
       <Ionicons name="search-outline" size={64} color={COLORS.textLight} />

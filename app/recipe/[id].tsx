@@ -4,34 +4,46 @@ import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
-import { Alert, ScrollView, Text, TouchableOpacity, View } from "react-native";
+import {
+  Alert,
+  ScrollView,
+  StatusBar,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import WebView from "react-native-webview";
 import { recipeDetailStyles } from "../../assets/styles/recipe-detail.styles";
 import LoadingSpinner from "../../components/LoadingSpinner";
 import { API_URL } from "../../constants/api";
 import { COLORS } from "../../constants/colors";
 import { MealAPI } from "../../services/mealAPI";
+import { Recipe } from "../../types";
 
-const RecipeDetailScreen = () => {
+interface RecipeWithVideo extends Recipe {
+  youtubeUrl?: string | null;
+}
+
+const RecipeDetailScreen = (): React.ReactElement => {
   // "id" as the name of the file
-  const { id: recipeId } = useLocalSearchParams();
+  const { id: recipeId } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
 
-  const [recipe, setRecipe] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [isSaved, setIsSaved] = useState(false);
-  const [isSaving, setIsSaving] = useState(false);
+  const [recipe, setRecipe] = useState<RecipeWithVideo | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [isSaved, setIsSaved] = useState<boolean>(false);
+  const [isSaving, setIsSaving] = useState<boolean>(false);
 
   const { user } = useUser();
   const userId = user?.id;
 
   useEffect(() => {
-    const checkIfSaved = async () => {
+    const checkIfSaved = async (): Promise<void> => {
       try {
         const response = await fetch(`${API_URL}/favorites/${userId}`);
         const favorites = await response.json();
         const isRecipeSaved = favorites.some(
-          (fav) => fav.recipeId === parseInt(recipeId),
+          (fav: any) => fav.recipeId === parseInt(recipeId),
         );
         setIsSaved(isRecipeSaved);
       } catch (error) {
@@ -39,18 +51,20 @@ const RecipeDetailScreen = () => {
       }
     };
 
-    const loadRecipeDetail = async () => {
+    const loadRecipeDetail = async (): Promise<void> => {
       setLoading(true);
       try {
         const mealData = await MealAPI.getMealById(recipeId);
         if (mealData) {
           const transformedRecipe = MealAPI.transformMealData(mealData);
 
-          const recipeWithVideo = {
-            ...transformedRecipe,
-            youtubeUrl: mealData.strYoutube || null,
-          };
-          setRecipe(recipeWithVideo);
+          if (transformedRecipe) {
+            const recipeWithVideo: RecipeWithVideo = {
+              ...transformedRecipe,
+              youtubeUrl: mealData.strYoutube || null,
+            };
+            setRecipe(recipeWithVideo);
+          }
         }
       } catch (error) {
         console.error("Error loading recipe detail", error);
@@ -63,13 +77,15 @@ const RecipeDetailScreen = () => {
     loadRecipeDetail();
   }, [recipeId, userId]);
 
-  const getYoutubeEmbedUrl = (url) => {
+  const getYoutubeEmbedUrl = (url: string): string => {
     // example url: https://www.youtube.com/watch?v=dQw4w9WgXcQ
     const videoId = url.split("v=")[1];
     return `https://www.youtube.com/embed/${videoId}`;
   };
 
-  const handleToggleSave = async () => {
+  const handleToggleSave = async (): Promise<void> => {
+    if (!recipe) return;
+
     setIsSaving(true);
     try {
       if (isSaved) {
@@ -111,8 +127,11 @@ const RecipeDetailScreen = () => {
   };
 
   if (loading) return <LoadingSpinner message="Loading recipe details..." />;
+  if (!recipe) return <LoadingSpinner message="Recipe not found..." />;
+
   return (
-    <View style={recipeDetailStyles.container}>
+    <View style={{ ...recipeDetailStyles.container }}>
+      <StatusBar hidden={true} />
       <ScrollView>
         {/* HEADER */}
         <View style={recipeDetailStyles.headerContainer}>
@@ -140,7 +159,11 @@ const RecipeDetailScreen = () => {
             <TouchableOpacity
               style={[
                 recipeDetailStyles.floatingButton,
-                { backgroundColor: isSaving ? COLORS.gray : COLORS.primary },
+                {
+                  backgroundColor: isSaving
+                    ? COLORS.primary + "80"
+                    : COLORS.primary,
+                },
               ]}
               onPress={handleToggleSave}
               disabled={isSaving}
@@ -229,7 +252,6 @@ const RecipeDetailScreen = () => {
                   source={{ uri: getYoutubeEmbedUrl(recipe.youtubeUrl) }}
                   allowsFullscreenVideo
                   mediaPlaybackRequiresUserAction={false}
-                  referrerpolicy="strict-origin-when-cross-origin"
                 />
               </View>
             </View>
@@ -239,7 +261,7 @@ const RecipeDetailScreen = () => {
           <View style={recipeDetailStyles.sectionContainer}>
             <View style={recipeDetailStyles.sectionTitleRow}>
               <LinearGradient
-                colors={[COLORS.primary, COLORS.secondary + "80"]}
+                colors={[COLORS.primary, COLORS.primary + "80"]}
                 style={recipeDetailStyles.sectionIcon}
               >
                 <Ionicons name="list" size={16} color={COLORS.white} />
@@ -279,7 +301,7 @@ const RecipeDetailScreen = () => {
           <View style={recipeDetailStyles.sectionContainer}>
             <View style={recipeDetailStyles.sectionTitleRow}>
               <LinearGradient
-                colors={[COLORS.secondary, COLORS.primary + "80"]}
+                colors={[COLORS.primary, COLORS.primary + "80"]}
                 style={recipeDetailStyles.sectionIcon}
               >
                 <Ionicons name="book" size={16} color={COLORS.white} />

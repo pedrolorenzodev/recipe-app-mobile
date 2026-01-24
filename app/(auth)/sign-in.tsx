@@ -1,3 +1,4 @@
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -10,21 +11,20 @@ import {
 } from "react-native";
 import { useRouter } from "expo-router";
 import { useSignIn } from "@clerk/clerk-expo";
-import React, { useEffect, useState } from "react";
 import { authStyles } from "../../assets/styles/auth.styles";
 import { Image } from "expo-image";
 import { COLORS } from "../../constants/colors";
 import { Ionicons } from "@expo/vector-icons";
 
-const SignInScreen = () => {
+const SignInScreen = (): React.ReactElement => {
   const router = useRouter();
 
   const { signIn, setActive, isLoaded } = useSignIn();
 
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [email, setEmail] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+  const [showPassword, setShowPassword] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false);
   const keyboardBehavior = Platform.OS === "ios" ? "padding" : "height";
   const verticalOffset = Platform.OS === "ios" ? 64 : 0;
 
@@ -32,7 +32,7 @@ const SignInScreen = () => {
     console.log(email);
   }, [email]);
 
-  const handleSignIn = async () => {
+  const handleSignIn = async (): Promise<void> => {
     if (!email || !password) {
       Alert.alert("Error", "Please fill in all fields");
       return;
@@ -56,7 +56,7 @@ const SignInScreen = () => {
         Alert.alert("Error", "Sign in failed. Please try again.");
         console.error(JSON.stringify(signInAttempt, null, 2));
       }
-    } catch (err) {
+    } catch (err: any) {
       Alert.alert("Error", err.errors?.[0]?.message || "Sign in failed");
       console.error(JSON.stringify(err, null, 2));
     } finally {
@@ -139,7 +139,7 @@ const SignInScreen = () => {
             {/* Sign Up Link */}
             <TouchableOpacity
               style={authStyles.linkContainer}
-              onPress={() => router.push("/(auth)/sign-up")}
+              onPress={() => router.push("/(auth)/sign-up" as any)}
             >
               <Text style={authStyles.linkText}>
                 Don&apos;t have an account?{" "}

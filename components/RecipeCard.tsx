@@ -1,20 +1,21 @@
 import { Ionicons } from "@expo/vector-icons";
 import { Image } from "expo-image";
 import { useRouter } from "expo-router";
+import React from "react";
 import { Text, TouchableOpacity, View } from "react-native";
 import { recipeCardStyles } from "../assets/styles/home.styles";
 import { COLORS } from "../constants/colors";
+import { RecipeCardProps } from "../types";
 
-export default function RecipeCard({ recipe }) {
+export default function RecipeCard({
+  recipe,
+}: RecipeCardProps): React.ReactElement {
   const router = useRouter();
-
-  // Debug log to see what data is received
-  console.log("RecipeCard received recipe:", recipe);
 
   return (
     <TouchableOpacity
       style={recipeCardStyles.container}
-      onPress={() => router.push(`/recipe/${recipe.id}`)}
+      onPress={() => router.navigate(`/recipe/${recipe.id}` as any)}
       activeOpacity={0.8}
     >
       <View style={recipeCardStyles.imageContainer}>

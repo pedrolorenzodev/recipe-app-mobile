@@ -6,27 +6,31 @@ import {
   FlatList,
   RefreshControl,
   ScrollView,
+  StatusBar,
   Text,
   TouchableOpacity,
   View,
 } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { homeStyles } from "../../assets/styles/home.styles";
 import CategoryFilter from "../../components/CategoryFilter";
 import LoadingSpinner from "../../components/LoadingSpinner";
 import RecipeCard from "../../components/RecipeCard";
 import { COLORS } from "../../constants/colors";
 import { MealAPI } from "../../services/mealAPI";
+import { Category, Recipe } from "../../types";
 
-const HomeScreen = () => {
+const HomeScreen = (): React.ReactElement => {
   const router = useRouter();
-  const [selectedCategory, setSelectedCategory] = useState(null);
-  const [recipes, setRecipes] = useState([]);
-  const [categories, setCategories] = useState([]);
-  const [featuredRecipe, setFeaturedRecipe] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [refreshing, setRefreshing] = useState(false);
+  const { top } = useSafeAreaInsets();
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [recipes, setRecipes] = useState<Recipe[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [featuredRecipe, setFeaturedRecipe] = useState<Recipe | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [refreshing, setRefreshing] = useState<boolean>(false);
 
-  const loadData = async () => {
+  const loadData = async (): Promise<void> => {
     try {
       setLoading(true);
 
@@ -37,20 +41,20 @@ const HomeScreen = () => {
         MealAPI.getRandomMeal(),
       ]);
 
-      const transformedCategories = apiCategories.map((cat, index) => ({
-        id: index + 1,
-        name: cat.strCategory,
-        image: cat.strCategoryThumb,
-        description: cat.strCategoryDescription,
-      }));
+      const transformedCategories: Category[] = apiCategories.map(
+        (cat, index) => ({
+          id: index + 1,
+          name: cat.strCategory,
+          image: cat.strCategoryThumb,
+          description: cat.strCategoryDescription,
+        }),
+      );
 
       setCategories(transformedCategories);
 
-      if (!selectedCategory) setSelectedCategory(transformedCategories[0].name);
-
       const transformedMeals = randomMeals
         .map((meal) => MealAPI.transformMealData(meal))
-        .filter((meal) => meal !== null);
+        .filter((meal): meal is Recipe => meal !== null);
       setRecipes(transformedMeals);
 
       const transformedFeatured = MealAPI.transformMealData(featuredMeal);
@@ -62,12 +66,12 @@ const HomeScreen = () => {
     }
   };
 
-  const loadCategoryData = async (category) => {
+  const loadCategoryData = async (category: string): Promise<void> => {
     try {
       const meals = await MealAPI.filterByCategory(category);
       const transformedMeals = meals
         .map((meal) => MealAPI.transformMealData(meal))
-        .filter((meal) => meal !== null);
+        .filter((meal): meal is Recipe => meal !== null);
 
       setRecipes(transformedMeals);
     } catch (error) {
@@ -76,12 +80,12 @@ const HomeScreen = () => {
     }
   };
 
-  const handleCategorySelect = async (category) => {
+  const handleCategorySelect = async (category: string): Promise<void> => {
     setSelectedCategory(category);
     await loadCategoryData(category);
   };
 
-  const handleRefresh = async () => {
+  const handleRefresh = async (): Promise<void> => {
     setRefreshing(true);
     await loadData();
     console.log("selectedCategory", selectedCategory);
@@ -89,6 +93,7 @@ const HomeScreen = () => {
   };
 
   useEffect(() => {
+    console.log("selectedCategory:", selectedCategory);
     loadData();
   }, []);
 
@@ -96,7 +101,8 @@ const HomeScreen = () => {
     return <LoadingSpinner message="Loading delicious recipes..." />;
 
   return (
-    <View style={homeStyles.container}>
+    <View style={{ ...homeStyles.container, paddingTop: top }}>
+      <StatusBar hidden={false} />
       <ScrollView
         showsVerticalScrollIndicator={false}
         refreshControl={
@@ -139,7 +145,7 @@ const HomeScreen = () => {
             <TouchableOpacity
               style={homeStyles.featuredCard}
               activeOpacity={0.9}
-              onPress={() => router.push(`/recipe/${featuredRecipe.id}`)}
+              onPress={() => router.push(`/recipe/${featuredRecipe.id}` as any)}
             >
               <View style={homeStyles.featuredImageContainer}>
                 <Image
@@ -209,7 +215,9 @@ const HomeScreen = () => {
 
         <View style={homeStyles.recipesSection}>
           <View style={homeStyles.sectionHeader}>
-            <Text style={homeStyles.sectionTitle}>{selectedCategory}</Text>
+            <Text style={homeStyles.sectionTitle}>
+              {selectedCategory || "Discover Recipes"}
+            </Text>
           </View>
 
           {recipes.length > 0 ? (

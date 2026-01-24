@@ -1,3 +1,4 @@
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -8,7 +9,6 @@ import {
   TouchableOpacity,
   Alert,
 } from "react-native";
-import React, { useState } from "react";
 import { useRouter } from "expo-router";
 import { useSignUp } from "@clerk/clerk-expo";
 import { authStyles } from "../../assets/styles/auth.styles";
@@ -17,22 +17,27 @@ import { Ionicons } from "@expo/vector-icons";
 import { COLORS } from "../../constants/colors";
 import VerifyEmail from "./verify-email";
 
-const SignUpScreen = () => {
+const SignUpScreen = (): React.ReactElement => {
   const router = useRouter();
   const { isLoaded, signUp } = useSignUp();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [pendingVerification, setPendingVerification] = useState(false);
+  const [email, setEmail] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+  const [showPassword, setShowPassword] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [pendingVerification, setPendingVerification] =
+    useState<boolean>(false);
   const keyboardBehavior = Platform.OS === "ios" ? "padding" : "height";
   const verticalOffset = Platform.OS === "ios" ? 64 : 0;
 
-  const handleSignUp = async () => {
-    if (!email || !password)
-      return Alert.alert("Error", "Please fill in all fields");
-    if (password.length < 6)
-      return Alert.alert("Error", "Password must be at least 6 characters");
+  const handleSignUp = async (): Promise<void> => {
+    if (!email || !password) {
+      Alert.alert("Error", "Please fill in all fields");
+      return;
+    }
+    if (password.length < 6) {
+      Alert.alert("Error", "Password must be at least 6 characters");
+      return;
+    }
 
     if (!isLoaded) return;
 
@@ -43,7 +48,7 @@ const SignUpScreen = () => {
 
       await signUp.prepareEmailAddressVerification({ strategy: "email_code" });
       setPendingVerification(true);
-    } catch (err) {
+    } catch (err: any) {
       Alert.alert(
         "Error",
         err.errors?.[0]?.message || "Failed to create account"

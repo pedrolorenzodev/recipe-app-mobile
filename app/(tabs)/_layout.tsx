@@ -4,11 +4,11 @@ import { Redirect, Tabs } from "expo-router";
 import React from "react";
 import { COLORS } from "../../constants/colors";
 
-const TabsLayout = () => {
+const TabsLayout = (): React.ReactElement | null => {
   const { isSignedIn, isLoaded } = useAuth();
 
-  if (!isLoaded) return;
-  if (!isSignedIn) return <Redirect href={"/(auth)/sign-in"} />;
+  if (!isLoaded) return null;
+  if (!isSignedIn) return <Redirect href={"/(auth)/sign-in" as any} />;
 
   return (
     <Tabs

@@ -1,10 +1,11 @@
+import React from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { Text, TouchableOpacity, View } from "react-native";
 import { favoritesStyles } from "../assets/styles/favorites.styles";
 import { COLORS } from "../constants/colors";
 
-function NoFavoritesFound() {
+function NoFavoritesFound(): React.ReactElement {
   const router = useRouter();
 
   return (
@@ -15,7 +16,7 @@ function NoFavoritesFound() {
       <Text style={favoritesStyles.emptyTitle}>No favorites yet</Text>
       <TouchableOpacity
         style={favoritesStyles.exploreButton}
-        onPress={() => router.push("/")}
+        onPress={() => router.push("/" as any)}
       >
         <Ionicons name="search" size={18} color={COLORS.white} />
         <Text style={favoritesStyles.exploreButtonText}>Explore Recipes</Text>

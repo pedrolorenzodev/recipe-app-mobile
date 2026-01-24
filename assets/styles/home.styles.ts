@@ -1,4 +1,4 @@
-import { StyleSheet, Dimensions } from "react-native";
+import { Dimensions, StyleSheet } from "react-native";
 import { COLORS } from "../../constants/colors";
 
 const { width } = Dimensions.get("window");
@@ -192,7 +192,8 @@ export const recipeCardStyles = StyleSheet.create({
     width: cardWidth,
     backgroundColor: COLORS.card,
     borderRadius: 16,
-    marginBottom: 16,
+    borderWidth: 1,
+    borderColor: COLORS.border,
     shadowColor: COLORS.shadow,
     shadowOffset: {
       width: 0,
@@ -214,6 +215,7 @@ export const recipeCardStyles = StyleSheet.create({
   },
   content: {
     padding: 12,
+    paddingBottom: 15,
   },
   title: {
     fontSize: 15,
@@ -225,7 +227,7 @@ export const recipeCardStyles = StyleSheet.create({
   description: {
     fontSize: 12,
     color: COLORS.textLight,
-    marginBottom: 8,
+    marginBottom: 10,
     lineHeight: 16,
   },
   footer: {

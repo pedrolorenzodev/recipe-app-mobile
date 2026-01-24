@@ -1,7 +1,7 @@
 import { Dimensions, StyleSheet } from "react-native";
 import { COLORS } from "../../constants/colors";
 
-const { width, height } = Dimensions.get("window");
+const { height } = Dimensions.get("window");
 
 export const recipeDetailStyles = StyleSheet.create({
   container: {

@@ -101,11 +101,11 @@ export const homeStyles = StyleSheet.create({
     letterSpacing: -0.5,
   },
   recipesGrid: {
-    gap: 16,
+    gap: 14,
   },
   row: {
-    justifyContent: "space-between",
-    gap: 16,
+    justifyContent: "center",
+    gap: 14,
   },
   emptyState: {
     alignItems: "center",
@@ -130,6 +130,7 @@ export const homeStyles = StyleSheet.create({
   categoryFilterScrollContent: {
     paddingHorizontal: 16,
     gap: 12,
+    paddingVertical: 6,
   },
   categoryButton: {
     flexDirection: "column",
@@ -145,11 +146,11 @@ export const homeStyles = StyleSheet.create({
     shadowColor: COLORS.shadow,
     shadowOffset: {
       width: 0,
-      height: 2,
+      height: 1,
     },
-    shadowOpacity: 0.05,
-    shadowRadius: 4,
-    elevation: 2,
+    shadowOpacity: 0.2,
+    shadowRadius: 3,
+    elevation: 3,
   },
   selectedCategory: {
     backgroundColor: COLORS.primary,
@@ -188,16 +189,18 @@ export const recipeCardStyles = StyleSheet.create({
     shadowColor: COLORS.shadow,
     shadowOffset: {
       width: 0,
-      height: 4,
+      height: 2,
     },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 4,
-    overflow: "hidden",
+    shadowOpacity: 0.2,
+    shadowRadius: 2.5,
+    elevation: 3,
   },
   imageContainer: {
     position: "relative",
     height: 140,
+    overflow: "hidden",
+    borderTopLeftRadius: 15,
+    borderTopRightRadius: 15,
   },
   image: {
     width: "100%",

@@ -315,6 +315,7 @@ export const recipeDetailStyles = StyleSheet.create({
     justifyContent: "center",
     paddingVertical: 16,
     gap: 10,
+    minHeight: 54,
   },
   buttonText: {
     color: COLORS.white,

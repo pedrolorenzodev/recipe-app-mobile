@@ -20,12 +20,15 @@ export const favoritesStyles = StyleSheet.create({
     letterSpacing: -0.5,
   },
   logoutButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: COLORS.card,
-    justifyContent: "center",
+    flexDirection: "row",
     alignItems: "center",
+    gap: 6,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    borderRadius: 12,
+    backgroundColor: COLORS.card,
+    borderWidth: 1,
+    borderColor: COLORS.border,
     shadowColor: COLORS.shadow,
     shadowOffset: {
       width: 0,
@@ -34,6 +37,11 @@ export const favoritesStyles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 2,
+  },
+  logoutText: {
+    fontSize: 14,
+    fontWeight: "600",
+    color: COLORS.primary,
   },
   statsContainer: {
     flexDirection: "row",

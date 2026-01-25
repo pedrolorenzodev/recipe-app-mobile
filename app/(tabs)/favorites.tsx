@@ -98,8 +98,10 @@ const FavoritesScreen = (): React.ReactElement => {
           <TouchableOpacity
             style={favoritesStyles.logoutButton}
             onPress={handleSignOut}
+            activeOpacity={0.7}
           >
-            <Ionicons name="log-out-outline" size={22} color={COLORS.text} />
+            <Ionicons name="log-out-outline" size={18} color={COLORS.primary} />
+            <Text style={favoritesStyles.logoutText}>Sign Out</Text>
           </TouchableOpacity>
         </View>
 

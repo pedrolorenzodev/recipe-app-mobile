@@ -1,5 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
 import { Image } from "expo-image";
+import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
@@ -154,7 +155,17 @@ const HomeScreen = (): React.ReactElement => {
                       contentFit="cover"
                       transition={500}
                     />
-                    <View style={homeStyles.featuredOverlay}>
+                    <LinearGradient
+                      colors={[
+                        "transparent",
+                        "rgba(0,0,0,0.05)",
+                        "rgba(0,0,0,0.3)",
+                        "rgba(0,0,0,0.6)",
+                        "rgba(0,0,0,0.85)",
+                      ]}
+                      locations={[0, 0.3, 0.5, 0.7, 1]}
+                      style={homeStyles.featuredOverlay}
+                    >
                       <View style={homeStyles.featuredBadge}>
                         <Text style={homeStyles.featuredBadgeText}>
                           Featured
@@ -204,7 +215,7 @@ const HomeScreen = (): React.ReactElement => {
                           )}
                         </View>
                       </View>
-                    </View>
+                    </LinearGradient>
                   </View>
                 </TouchableOpacity>
               )}

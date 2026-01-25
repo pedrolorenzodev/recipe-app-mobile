@@ -45,7 +45,6 @@ export const homeStyles = StyleSheet.create({
   },
   featuredOverlay: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: "rgba(0,0,0,0.3)",
     justifyContent: "space-between",
     padding: 20,
   },

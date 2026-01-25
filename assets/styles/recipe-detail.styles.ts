@@ -302,6 +302,7 @@ export const recipeDetailStyles = StyleSheet.create({
     overflow: "hidden",
   },
   primaryButton: {
+    backgroundColor: COLORS.primary,
     borderRadius: 16,
     overflow: "hidden",
     shadowColor: COLORS.shadow,
@@ -309,8 +310,6 @@ export const recipeDetailStyles = StyleSheet.create({
     shadowOpacity: 0.2,
     shadowRadius: 8,
     elevation: 4,
-  },
-  buttonGradient: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",

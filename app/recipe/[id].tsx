@@ -390,29 +390,23 @@ const RecipeDetailScreen = (): React.ReactElement => {
             style={[
               recipeDetailStyles.primaryButton,
               isSaving && {
-                opacity: 0.9,
-                backgroundColor: COLORS.text,
+                opacity: 0.8,
               },
             ]}
             onPress={handleToggleSave}
             disabled={isSaving}
-            activeOpacity={0.9}
+            activeOpacity={0.8}
           >
-            <LinearGradient
-              colors={[COLORS.primary, COLORS.primary + "CC"]}
-              style={recipeDetailStyles.buttonGradient}
-            >
-              {isSaving ? (
-                <ActivityIndicator size="small" color={COLORS.white} />
-              ) : (
-                <>
-                  <Ionicons name="heart" size={20} color={COLORS.white} />
-                  <Text style={recipeDetailStyles.buttonText}>
-                    {isSaved ? "Remove from Favorites" : "Add to Favorites"}
-                  </Text>
-                </>
-              )}
-            </LinearGradient>
+            {isSaving ? (
+              <ActivityIndicator size="small" color={COLORS.white} />
+            ) : (
+              <>
+                <Ionicons name="heart" size={20} color={COLORS.white} />
+                <Text style={recipeDetailStyles.buttonText}>
+                  {isSaved ? "Remove from Favorites" : "Add to Favorites"}
+                </Text>
+              </>
+            )}
           </TouchableOpacity>
         </View>
       </ScrollView>

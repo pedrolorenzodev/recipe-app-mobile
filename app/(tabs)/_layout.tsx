@@ -1,13 +1,12 @@
-import { useAuth } from "@clerk/clerk-expo";
 import { Ionicons } from "@expo/vector-icons";
-import { Redirect, Tabs } from "expo-router";
+import { Tabs, Redirect } from "expo-router";
 import React from "react";
 import { COLORS } from "../../constants/colors";
+import { useAuth } from "@clerk/clerk-expo";
 
 const TabsLayout = (): React.ReactElement | null => {
-  const { isSignedIn, isLoaded } = useAuth();
+  const { isSignedIn } = useAuth();
 
-  if (!isLoaded) return null;
   if (!isSignedIn) return <Redirect href={"/(auth)/sign-in" as any} />;
 
   return (

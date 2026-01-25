@@ -42,7 +42,8 @@ const HomeScreen = (): React.ReactElement => {
       // you can call this anything
       const [apiCategories, randomMeals, ...featuredMeals] = await Promise.all([
         MealAPI.getCategories(),
-        MealAPI.getRandomMeals(12),
+        MealAPI.getRandomMeals(14),
+        MealAPI.getRandomMeal(),
         MealAPI.getRandomMeal(),
         MealAPI.getRandomMeal(),
         MealAPI.getRandomMeal(),

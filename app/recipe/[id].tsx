@@ -5,6 +5,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
+  ActivityIndicator,
   Alert,
   Linking,
   ScrollView,
@@ -386,18 +387,31 @@ const RecipeDetailScreen = (): React.ReactElement => {
           </View>
 
           <TouchableOpacity
-            style={recipeDetailStyles.primaryButton}
+            style={[
+              recipeDetailStyles.primaryButton,
+              isSaving && {
+                opacity: 0.9,
+                backgroundColor: COLORS.text,
+              },
+            ]}
             onPress={handleToggleSave}
             disabled={isSaving}
+            activeOpacity={0.9}
           >
             <LinearGradient
               colors={[COLORS.primary, COLORS.primary + "CC"]}
               style={recipeDetailStyles.buttonGradient}
             >
-              <Ionicons name="heart" size={20} color={COLORS.white} />
-              <Text style={recipeDetailStyles.buttonText}>
-                {isSaved ? "Remove from Favorites" : "Add to Favorites"}
-              </Text>
+              {isSaving ? (
+                <ActivityIndicator size="small" color={COLORS.white} />
+              ) : (
+                <>
+                  <Ionicons name="heart" size={20} color={COLORS.white} />
+                  <Text style={recipeDetailStyles.buttonText}>
+                    {isSaved ? "Remove from Favorites" : "Add to Favorites"}
+                  </Text>
+                </>
+              )}
             </LinearGradient>
           </TouchableOpacity>
         </View>

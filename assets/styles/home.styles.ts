@@ -4,6 +4,10 @@ import { COLORS } from "../../constants/colors";
 const { width } = Dimensions.get("window");
 const cardWidth = (width - 48) / 2;
 
+// Carousel dimensions (not in StyleSheet)
+export const CAROUSEL_WIDTH = width;
+export const CAROUSEL_HEIGHT = 260;
+
 export const homeStyles = StyleSheet.create({
   container: {
     flex: 1,
@@ -12,25 +16,12 @@ export const homeStyles = StyleSheet.create({
   scrollContent: {
     paddingBottom: 32,
   },
-  welcomeSection: {
-    paddingHorizontal: 20,
-    paddingTop: 20,
-    paddingBottom: 16,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
-  welcomeText: {
-    fontSize: 32,
-    fontWeight: "800",
-    color: COLORS.text,
-    letterSpacing: -0.5,
-  },
   featuredSection: {
-    paddingHorizontal: 20,
-    marginBottom: 24,
+    paddingTop: 20,
   },
   featuredCard: {
+    width: width - 40,
+    marginHorizontal: 20,
     borderRadius: 24,
     overflow: "hidden",
     backgroundColor: COLORS.card,
@@ -59,10 +50,10 @@ export const homeStyles = StyleSheet.create({
     padding: 20,
   },
   featuredBadge: {
-    backgroundColor: COLORS.primary,
+    backgroundColor: COLORS.textLight + "90",
     paddingHorizontal: 12,
     paddingVertical: 6,
-    borderRadius: 20,
+    borderRadius: 8,
     alignSelf: "flex-start",
   },
   featuredBadgeText: {

@@ -11,8 +11,13 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import Carousel from "react-native-reanimated-carousel";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { homeStyles } from "../../assets/styles/home.styles";
+import {
+  CAROUSEL_HEIGHT,
+  CAROUSEL_WIDTH,
+  homeStyles,
+} from "../../assets/styles/home.styles";
 import CategoryFilter from "../../components/CategoryFilter";
 import LoadingSpinner from "../../components/LoadingSpinner";
 import RecipeCard from "../../components/RecipeCard";
@@ -26,7 +31,7 @@ const HomeScreen = (): React.ReactElement => {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
-  const [featuredRecipe, setFeaturedRecipe] = useState<Recipe | null>(null);
+  const [featuredRecipes, setFeaturedRecipes] = useState<Recipe[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [refreshing, setRefreshing] = useState<boolean>(false);
 
@@ -35,9 +40,12 @@ const HomeScreen = (): React.ReactElement => {
       setLoading(true);
 
       // you can call this anything
-      const [apiCategories, randomMeals, featuredMeal] = await Promise.all([
+      const [apiCategories, randomMeals, ...featuredMeals] = await Promise.all([
         MealAPI.getCategories(),
         MealAPI.getRandomMeals(12),
+        MealAPI.getRandomMeal(),
+        MealAPI.getRandomMeal(),
+        MealAPI.getRandomMeal(),
         MealAPI.getRandomMeal(),
       ]);
 
@@ -57,8 +65,10 @@ const HomeScreen = (): React.ReactElement => {
         .filter((meal): meal is Recipe => meal !== null);
       setRecipes(transformedMeals);
 
-      const transformedFeatured = MealAPI.transformMealData(featuredMeal);
-      setFeaturedRecipe(transformedFeatured);
+      const transformedFeatured = featuredMeals
+        .map((meal) => MealAPI.transformMealData(meal))
+        .filter((meal): meal is Recipe => meal !== null);
+      setFeaturedRecipes(transformedFeatured);
     } catch (error) {
       console.log("Error loading the data", error);
     } finally {
@@ -114,94 +124,90 @@ const HomeScreen = (): React.ReactElement => {
         }
         contentContainerStyle={homeStyles.scrollContent}
       >
-        {/* ANIMAL ICONS */}
-        <View style={homeStyles.welcomeSection}>
-          <Image
-            source={require("../../assets/images/lamb.png")}
-            style={{
-              width: 100,
-              height: 100,
-            }}
-          />
-          <Image
-            source={require("../../assets/images/chicken.png")}
-            style={{
-              width: 100,
-              height: 100,
-            }}
-          />
-          <Image
-            source={require("../../assets/images/pork.png")}
-            style={{
-              width: 100,
-              height: 100,
-            }}
-          />
-        </View>
-
-        {/* FEATURED SECTION */}
-        {featuredRecipe && (
+        {/* FEATURED CAROUSEL */}
+        {featuredRecipes.length > 0 && (
           <View style={homeStyles.featuredSection}>
-            <TouchableOpacity
-              style={homeStyles.featuredCard}
-              activeOpacity={0.9}
-              onPress={() => router.push(`/recipe/${featuredRecipe.id}` as any)}
-            >
-              <View style={homeStyles.featuredImageContainer}>
-                <Image
-                  source={{ uri: featuredRecipe.image }}
-                  style={homeStyles.featuredImage}
-                  contentFit="cover"
-                  transition={500}
-                />
-                <View style={homeStyles.featuredOverlay}>
-                  <View style={homeStyles.featuredBadge}>
-                    <Text style={homeStyles.featuredBadgeText}>Featured</Text>
-                  </View>
-
-                  <View style={homeStyles.featuredContent}>
-                    <Text style={homeStyles.featuredTitle} numberOfLines={2}>
-                      {featuredRecipe.title}
-                    </Text>
-
-                    <View style={homeStyles.featuredMeta}>
-                      <View style={homeStyles.metaItem}>
-                        <Ionicons
-                          name="time-outline"
-                          size={16}
-                          color={COLORS.white}
-                        />
-                        <Text style={homeStyles.metaText}>
-                          {featuredRecipe.cookTime}
+            <Carousel
+              loop={featuredRecipes.length > 1}
+              width={CAROUSEL_WIDTH}
+              height={CAROUSEL_HEIGHT}
+              data={featuredRecipes}
+              scrollAnimationDuration={500}
+              mode="parallax"
+              modeConfig={{
+                parallaxScrollingScale: 0.92,
+                parallaxScrollingOffset: 60,
+              }}
+              renderItem={({ item: featuredRecipe }) => (
+                <TouchableOpacity
+                  style={homeStyles.featuredCard}
+                  activeOpacity={0.9}
+                  onPress={() =>
+                    router.push(`/recipe/${featuredRecipe.id}` as any)
+                  }
+                >
+                  <View style={homeStyles.featuredImageContainer}>
+                    <Image
+                      source={{ uri: featuredRecipe.image }}
+                      style={homeStyles.featuredImage}
+                      contentFit="cover"
+                      transition={500}
+                    />
+                    <View style={homeStyles.featuredOverlay}>
+                      <View style={homeStyles.featuredBadge}>
+                        <Text style={homeStyles.featuredBadgeText}>
+                          Featured
                         </Text>
                       </View>
-                      <View style={homeStyles.metaItem}>
-                        <Ionicons
-                          name="people-outline"
-                          size={16}
-                          color={COLORS.white}
-                        />
-                        <Text style={homeStyles.metaText}>
-                          {featuredRecipe.servings}
+
+                      <View style={homeStyles.featuredContent}>
+                        <Text
+                          style={homeStyles.featuredTitle}
+                          numberOfLines={1}
+                        >
+                          {featuredRecipe.title}
                         </Text>
-                      </View>
-                      {featuredRecipe.area && (
-                        <View style={homeStyles.metaItem}>
-                          <Ionicons
-                            name="location-outline"
-                            size={16}
-                            color={COLORS.white}
-                          />
-                          <Text style={homeStyles.metaText}>
-                            {featuredRecipe.area}
-                          </Text>
+
+                        <View style={homeStyles.featuredMeta}>
+                          <View style={homeStyles.metaItem}>
+                            <Ionicons
+                              name="time-outline"
+                              size={16}
+                              color={COLORS.white}
+                            />
+                            <Text style={homeStyles.metaText}>
+                              {featuredRecipe.cookTime}
+                            </Text>
+                          </View>
+                          <View style={homeStyles.metaItem}>
+                            <Ionicons
+                              name="people-outline"
+                              size={16}
+                              color={COLORS.white}
+                            />
+                            <Text style={homeStyles.metaText}>
+                              {featuredRecipe.servings}
+                            </Text>
+                          </View>
+                          {featuredRecipe.area && (
+                            <View style={homeStyles.metaItem}>
+                              <Ionicons
+                                name="location-outline"
+                                size={16}
+                                color={COLORS.white}
+                              />
+                              <Text style={homeStyles.metaText}>
+                                {featuredRecipe.area}
+                              </Text>
+                            </View>
+                          )}
                         </View>
-                      )}
+                      </View>
                     </View>
                   </View>
-                </View>
-              </View>
-            </TouchableOpacity>
+                </TouchableOpacity>
+              )}
+            />
           </View>
         )}
 

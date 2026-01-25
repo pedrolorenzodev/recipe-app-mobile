@@ -1,9 +1,11 @@
 import { useClerk, useUser } from "@clerk/clerk-expo";
 import { Ionicons } from "@expo/vector-icons";
-import React, { useEffect, useState } from "react";
+import { useFocusEffect } from "expo-router";
+import React, { useCallback, useState } from "react";
 import {
   Alert,
   FlatList,
+  RefreshControl,
   ScrollView,
   StatusBar,
   Text,
@@ -25,31 +27,46 @@ const FavoritesScreen = (): React.ReactElement => {
   const { top } = useSafeAreaInsets();
   const [favoriteRecipes, setFavoriteRecipes] = useState<FavoriteRecipe[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+  const [refreshing, setRefreshing] = useState<boolean>(false);
 
-  useEffect(() => {
-    const loadFavorites = async (): Promise<void> => {
-      try {
-        const response = await fetch(`${API_URL}/favorites/${user?.id}`);
-        if (!response.ok) throw new Error("Failed to fetch favorites");
+  const loadFavorites = useCallback(async (): Promise<void> => {
+    try {
+      const response = await fetch(`${API_URL}/favorites/${user?.id}`);
+      if (!response.ok) throw new Error("Failed to fetch favorites");
 
-        const favorites: FavoriteRecipe[] = await response.json();
+      const favorites: FavoriteRecipe[] = await response.json();
 
-        // transform de data to match the RecipeCard component's expected format
-        const transformedFavorites = favorites.map((favorite) => ({
-          ...favorite,
-          id: favorite.recipeId,
-        }));
+      // transform de data to match the RecipeCard component's expected format
+      const transformedFavorites = favorites.map((favorite) => ({
+        ...favorite,
+        id: favorite.recipeId,
+      }));
 
-        setFavoriteRecipes(transformedFavorites);
-      } catch (error) {
-        console.log("Error loading favorites", error);
-        Alert.alert("Error", "Failed to load favorites");
-      } finally {
-        setLoading(false);
-      }
-    };
-    loadFavorites();
+      setFavoriteRecipes(transformedFavorites);
+    } catch (error) {
+      console.log("Error loading favorites", error);
+      Alert.alert("Error", "Failed to load favorites");
+    }
   }, [user?.id]);
+
+  const handleRefresh = async (): Promise<void> => {
+    setRefreshing(true);
+    await loadFavorites();
+    setRefreshing(false);
+  };
+
+  // Load favorites when the screen comes into focus
+  useFocusEffect(
+    useCallback(() => {
+      const loadData = async (): Promise<void> => {
+        setLoading(true);
+        await loadFavorites();
+        setLoading(false);
+      };
+      
+      loadData();
+    }, [loadFavorites])
+  );
 
   const handleSignOut = (): void => {
     Alert.alert("Logout", "Are you sure you want to logout?", [
@@ -66,7 +83,16 @@ const FavoritesScreen = (): React.ReactElement => {
   return (
     <View style={{ ...favoritesStyles.container, paddingTop: top }}>
       <StatusBar hidden={false} />
-      <ScrollView showsVerticalScrollIndicator={false}>
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={handleRefresh}
+            tintColor={COLORS.primary}
+          />
+        }
+      >
         <View style={favoritesStyles.header}>
           <Text style={favoritesStyles.title}>Favorites</Text>
           <TouchableOpacity

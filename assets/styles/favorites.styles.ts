@@ -75,10 +75,12 @@ export const favoritesStyles = StyleSheet.create({
     paddingBottom: 32,
   },
   recipesGrid: {
-    gap: 16,
+    gap: 14,
+    paddingVertical: 8,
   },
   row: {
-    justifyContent: "space-between",
+    justifyContent: "flex-start",
+    gap: 14,
   },
   emptyState: {
     alignItems: "center",

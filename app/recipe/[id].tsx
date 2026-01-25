@@ -185,8 +185,8 @@ const RecipeDetailScreen = (): React.ReactElement => {
                   isSaving
                     ? "hourglass"
                     : isSaved
-                      ? "bookmark"
-                      : "bookmark-outline"
+                      ? "heart"
+                      : "heart-outline"
                 }
                 size={24}
                 color={COLORS.white}

@@ -103,9 +103,11 @@ export const searchStyles = StyleSheet.create({
   recipesGrid: {
     gap: 16,
     paddingBottom: 32,
+    paddingVertical: 8,
   },
   row: {
-    justifyContent: "space-between",
+    justifyContent: "flex-start",
+    gap: 14,
   },
   emptyState: {
     flex: 1,

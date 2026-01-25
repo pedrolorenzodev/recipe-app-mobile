@@ -101,9 +101,10 @@ export const homeStyles = StyleSheet.create({
   },
   recipesGrid: {
     gap: 14,
+    paddingVertical: 8,
   },
   row: {
-    justifyContent: "center",
+    justifyContent: "flex-start",
     gap: 14,
   },
   emptyState: {

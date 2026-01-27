@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { forwardRef, useImperativeHandle, useRef, useState } from "react";
 import {
   Keyboard,
   NativeSyntheticEvent,
@@ -14,18 +14,29 @@ interface CodeInputProps {
   value: string;
   onChangeText: (text: string) => void;
   autoFocus?: boolean;
+  hasError?: boolean;
 }
 
-export default function CodeInput({
-  length = 6,
-  value,
-  onChangeText,
-  autoFocus = false,
-}: CodeInputProps): React.ReactElement {
+export interface CodeInputRef {
+  focus: () => void;
+}
+
+const CodeInput = forwardRef<CodeInputRef, CodeInputProps>(
+  (
+    { length = 6, value, onChangeText, autoFocus = false, hasError = false },
+    ref,
+  ) => {
   const [focusedIndex, setFocusedIndex] = useState<number | null>(
     autoFocus ? 0 : null,
   );
   const inputRefs = useRef<(TextInput | null)[]>([]);
+
+  // Expose focus method to parent component
+  useImperativeHandle(ref, () => ({
+    focus: () => {
+      inputRefs.current[0]?.focus();
+    },
+  }));
 
   const handleChangeText = (text: string, index: number) => {
     // Only allow numbers
@@ -109,6 +120,7 @@ export default function CodeInput({
             styles.input,
             focusedIndex === index && styles.inputFocused,
             digit && styles.inputFilled,
+            hasError && styles.inputError,
           ]}
           value={digit}
           onChangeText={(text) => handleChangeText(text, index)}
@@ -125,7 +137,9 @@ export default function CodeInput({
       ))}
     </View>
   );
-}
+});
+
+CodeInput.displayName = "CodeInput";
 
 const styles = StyleSheet.create({
   container: {
@@ -157,4 +171,10 @@ const styles = StyleSheet.create({
     borderColor: COLORS.primary,
     backgroundColor: COLORS.background,
   },
+  inputError: {
+    borderColor: "#E53935",
+    borderWidth: 2,
+  },
 });
+
+export default CodeInput;

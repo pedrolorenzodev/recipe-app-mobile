@@ -1,7 +1,7 @@
 import { useSignIn, useSignUp } from "@clerk/clerk-expo";
 import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
   Alert,
   KeyboardAvoidingView,
@@ -14,7 +14,7 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { authStyles } from "../../assets/styles/auth.styles";
-import CodeInput from "../../components/CodeInput";
+import CodeInput, { CodeInputRef } from "../../components/CodeInput";
 import { COLORS } from "../../constants/colors";
 
 type VerificationType = "sign-in" | "sign-up";
@@ -33,14 +33,17 @@ const VerifyCodeScreen = (): React.ReactElement => {
   } = useSignUp();
   const { top } = useSafeAreaInsets();
   const params = useLocalSearchParams();
+  const codeInputRef = useRef<CodeInputRef>(null);
 
   const email = params.email as string;
   const type = params.type as VerificationType;
 
   const [code, setCode] = useState<string>("");
-  const [loading, setLoading] = useState<boolean>(false);
+  const [verifying, setVerifying] = useState<boolean>(false);
+  const [resending, setResending] = useState<boolean>(false);
   const [resendTimer, setResendTimer] = useState<number>(60);
   const [canResend, setCanResend] = useState<boolean>(false);
+  const [hasError, setHasError] = useState<boolean>(false);
   const keyboardBehavior = Platform.OS === "ios" ? "padding" : "height";
   const verticalOffset = Platform.OS === "ios" ? 64 : 0;
 
@@ -56,23 +59,22 @@ const VerifyCodeScreen = (): React.ReactElement => {
     }
   }, [resendTimer]);
 
-  // Auto-submit when code is complete
-  useEffect(() => {
-    if (code.length === 6) {
-      handleVerifyCode();
+  const handleCodeChange = (text: string) => {
+    setCode(text);
+    if (hasError && text.length > 0) {
+      setHasError(false);
     }
-  }, [code]);
+  };
 
-  const handleVerifyCode = async (): Promise<void> => {
+  const handleVerifyCode = useCallback(async (): Promise<void> => {
     if (!code || code.length !== 6) {
-      Alert.alert("Error", "Please enter a valid 6-digit code");
       return;
     }
 
     const isLoaded = type === "sign-in" ? isSignInLoaded : isSignUpLoaded;
     if (!isLoaded) return;
 
-    setLoading(true);
+    setVerifying(true);
 
     try {
       if (type === "sign-in") {
@@ -86,7 +88,9 @@ const VerifyCodeScreen = (): React.ReactElement => {
           await setSignInActive!({ session: signInAttempt.createdSessionId });
           router.replace("/(tabs)" as any);
         } else {
-          Alert.alert("Error", "Verification failed. Please try again.");
+          setHasError(true);
+          setCode(""); // Clear code on error
+          setTimeout(() => codeInputRef.current?.focus(), 100);
         }
       } else {
         // Sign-up verification
@@ -98,26 +102,42 @@ const VerifyCodeScreen = (): React.ReactElement => {
           await setSignUpActive!({ session: signUpAttempt.createdSessionId });
           router.replace("/(tabs)" as any);
         } else {
-          Alert.alert("Error", "Verification failed. Please try again.");
+          setHasError(true);
+          setCode(""); // Clear code on error
+          setTimeout(() => codeInputRef.current?.focus(), 100);
         }
       }
     } catch (err: any) {
-      const errorMessage =
-        err.errors?.[0]?.longMessage ||
-        err.errors?.[0]?.message ||
-        "Verification failed. Please check the code.";
-      Alert.alert("Error", errorMessage);
-      console.error("Verification error:", JSON.stringify(err, null, 2));
+      setHasError(true);
       setCode(""); // Clear code on error
+      setTimeout(() => codeInputRef.current?.focus(), 100);
+      console.error("Verification error:", JSON.stringify(err, null, 2));
     } finally {
-      setLoading(false);
+      setVerifying(false);
     }
-  };
+  }, [
+    code,
+    type,
+    isSignInLoaded,
+    isSignUpLoaded,
+    signIn,
+    signUp,
+    setSignInActive,
+    setSignUpActive,
+    router,
+  ]);
+
+  // Auto-submit when code is complete
+  useEffect(() => {
+    if (code.length === 6) {
+      handleVerifyCode();
+    }
+  }, [code, handleVerifyCode]);
 
   const handleResendCode = async (): Promise<void> => {
     if (!canResend) return;
 
-    setLoading(true);
+    setResending(true);
     setCanResend(false);
     setResendTimer(60);
 
@@ -138,7 +158,7 @@ const VerifyCodeScreen = (): React.ReactElement => {
       setCanResend(true);
       setResendTimer(0);
     } finally {
-      setLoading(false);
+      setResending(false);
     }
   };
 
@@ -186,11 +206,22 @@ const VerifyCodeScreen = (): React.ReactElement => {
           {/* Code Input */}
           <View style={authStyles.formContainer}>
             <CodeInput
+              ref={codeInputRef}
               length={6}
               value={code}
-              onChangeText={setCode}
+              onChangeText={handleCodeChange}
               autoFocus
+              hasError={hasError}
             />
+
+            {/* Error Message */}
+            {hasError && (
+              <View style={styles.errorContainer}>
+                <Text style={styles.errorText}>
+                  Wrong code. Please try again
+                </Text>
+              </View>
+            )}
 
             {/* Timer and Resend */}
             <View style={styles.resendContainer}>
@@ -201,11 +232,11 @@ const VerifyCodeScreen = (): React.ReactElement => {
               ) : (
                 <TouchableOpacity
                   onPress={handleResendCode}
-                  disabled={loading}
+                  disabled={resending}
                   activeOpacity={0.7}
                 >
                   <Text style={styles.resendText}>
-                    {loading ? "Sending..." : "Resend Code"}
+                    {resending ? "Sending..." : "Resend Code"}
                   </Text>
                 </TouchableOpacity>
               )}
@@ -215,14 +246,14 @@ const VerifyCodeScreen = (): React.ReactElement => {
             <TouchableOpacity
               style={[
                 authStyles.authButton,
-                (loading || code.length !== 6) && authStyles.buttonDisabled,
+                (verifying || code.length !== 6) && authStyles.buttonDisabled,
               ]}
               onPress={handleVerifyCode}
-              disabled={loading || code.length !== 6}
+              disabled={verifying || code.length !== 6}
               activeOpacity={0.8}
             >
               <Text style={authStyles.buttonText}>
-                {loading ? "Verifying..." : "Verify Code"}
+                {verifying ? "Verifying..." : "Verify Code"}
               </Text>
             </TouchableOpacity>
 
@@ -253,6 +284,16 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingHorizontal: 40,
     marginBottom: 45,
+  },
+  errorContainer: {
+    alignItems: "flex-start",
+    marginTop: 12,
+    paddingHorizontal: 4,
+  },
+  errorText: {
+    fontSize: 14,
+    color: "#E53935",
+    fontWeight: "500",
   },
   resendContainer: {
     alignItems: "center",

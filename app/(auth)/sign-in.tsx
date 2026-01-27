@@ -4,10 +4,10 @@ import { Image } from "expo-image";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import {
-  Alert,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
+  StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
@@ -26,12 +26,27 @@ const SignInScreen = (): React.ReactElement => {
   const [password, setPassword] = useState<string>("");
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
+  const [hasError, setHasError] = useState<boolean>(false);
   const keyboardBehavior = Platform.OS === "ios" ? "padding" : "height";
   const verticalOffset = Platform.OS === "ios" ? 64 : 0;
 
+  const handleEmailChange = (text: string) => {
+    setEmail(text);
+    if (hasError) {
+      setHasError(false);
+    }
+  };
+
+  const handlePasswordChange = (text: string) => {
+    setPassword(text);
+    if (hasError) {
+      setHasError(false);
+    }
+  };
+
   const handleSignIn = async (): Promise<void> => {
     if (!email || !password) {
-      Alert.alert("Error", "Please fill in all fields");
+      setHasError(true);
       return;
     }
 
@@ -57,19 +72,12 @@ const SignInScreen = (): React.ReactElement => {
           params: { email: email.trim(), type: "sign-in" },
         } as any);
       } else {
+        setHasError(true);
         console.log("Sign in status:", signInAttempt.status);
         console.log("Sign in attempt:", JSON.stringify(signInAttempt, null, 2));
-        Alert.alert(
-          "Error",
-          "Sign in incomplete. Status: " + signInAttempt.status,
-        );
       }
     } catch (err: any) {
-      const errorMessage =
-        err.errors?.[0]?.longMessage ||
-        err.errors?.[0]?.message ||
-        "Sign in failed. Please check your credentials.";
-      Alert.alert("Error", errorMessage);
+      setHasError(true);
       console.error("Sign in error:", JSON.stringify(err, null, 2));
     } finally {
       setLoading(false);
@@ -99,11 +107,14 @@ const SignInScreen = (): React.ReactElement => {
           <View style={authStyles.formContainer}>
             <View style={authStyles.inputContainer}>
               <TextInput
-                style={authStyles.textInput}
+                style={[
+                  authStyles.textInput,
+                  hasError && styles.inputError,
+                ]}
                 placeholder="Enter email"
                 placeholderTextColor={COLORS.textLight}
                 value={email}
-                onChangeText={setEmail}
+                onChangeText={handleEmailChange}
                 keyboardType="email-address"
                 autoCapitalize="none"
               />
@@ -111,11 +122,14 @@ const SignInScreen = (): React.ReactElement => {
 
             <View style={authStyles.inputContainer}>
               <TextInput
-                style={authStyles.textInput}
+                style={[
+                  authStyles.textInput,
+                  hasError && styles.inputError,
+                ]}
                 placeholder="Enter password"
                 placeholderTextColor={COLORS.textLight}
                 value={password}
-                onChangeText={setPassword}
+                onChangeText={handlePasswordChange}
                 secureTextEntry={!showPassword}
                 autoCapitalize="none"
               />
@@ -130,6 +144,15 @@ const SignInScreen = (): React.ReactElement => {
                 />
               </TouchableOpacity>
             </View>
+
+            {/* Error Message */}
+            {hasError && (
+              <View style={styles.errorContainer}>
+                <Text style={styles.errorText}>
+                  Email or password is incorrect. Please try again.
+                </Text>
+              </View>
+            )}
 
             <TouchableOpacity
               style={[
@@ -160,5 +183,22 @@ const SignInScreen = (): React.ReactElement => {
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  inputError: {
+    borderColor: "#E53935",
+    borderWidth: 2,
+  },
+  errorContainer: {
+    alignItems: "flex-start",
+    marginBottom: 20,
+    paddingHorizontal: 4,
+  },
+  errorText: {
+    fontSize: 14,
+    color: "#E53935",
+    fontWeight: "500",
+  },
+});
 
 export default SignInScreen;

@@ -37,6 +37,7 @@ const HomeScreen = (): React.ReactElement => {
   const [featuredRecipes, setFeaturedRecipes] = useState<Recipe[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [refreshing, setRefreshing] = useState<boolean>(false);
+  const [categoryLoading, setCategoryLoading] = useState<boolean>(false);
 
   const loadData = async (): Promise<void> => {
     try {
@@ -96,7 +97,9 @@ const HomeScreen = (): React.ReactElement => {
 
   const handleCategorySelect = async (category: string): Promise<void> => {
     setSelectedCategory(category);
+    setCategoryLoading(true);
     await loadCategoryData(category);
+    setCategoryLoading(false);
   };
 
   const handleRefresh = async (): Promise<void> => {
@@ -115,7 +118,7 @@ const HomeScreen = (): React.ReactElement => {
 
     const interval = setInterval(() => {
       carouselRef.current?.next();
-    }, 7000);
+    }, 5000);
 
     return () => clearInterval(interval);
   }, [featuredRecipes]);
@@ -250,7 +253,7 @@ const HomeScreen = (): React.ReactElement => {
             </Text>
           </View>
 
-          {refreshing ? (
+          {refreshing || categoryLoading ? (
             <RecipeGridSkeleton count={14} />
           ) : recipes.length > 0 ? (
             <FlatList

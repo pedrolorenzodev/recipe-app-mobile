@@ -10,8 +10,8 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { searchStyles } from "../../assets/styles/search.styles";
-import LoadingSpinner from "../../components/LoadingSpinner";
 import RecipeCard from "../../components/RecipeCard";
+import RecipeGridSkeleton from "../../components/RecipeGridSkeleton";
 import { COLORS } from "../../constants/colors";
 import { useDebounce } from "../../hooks/useDebounce";
 import { MealAPI } from "../../services/mealAPI";
@@ -84,8 +84,6 @@ const SearchScreen = (): React.ReactElement => {
     handleSearch();
   }, [debouncedSearchQuery, initialLoading]);
 
-  if (initialLoading) return <LoadingSpinner message="Loading recipes..." />;
-
   return (
     <View style={{ ...searchStyles.container, paddingTop: top }}>
       <StatusBar hidden={false} />
@@ -129,10 +127,8 @@ const SearchScreen = (): React.ReactElement => {
           <Text style={searchStyles.resultsCount}>{recipes.length} found</Text>
         </View>
 
-        {loading ? (
-          <View style={searchStyles.loadingContainer}>
-            <LoadingSpinner message="Searching recipes..." size="small" />
-          </View>
+        {initialLoading || loading ? (
+          <RecipeGridSkeleton count={12} />
         ) : (
           <FlatList
             data={recipes}

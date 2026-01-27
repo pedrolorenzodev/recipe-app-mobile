@@ -2,7 +2,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   FlatList,
   RefreshControl,
@@ -22,6 +22,7 @@ import {
 import CategoryFilter from "../../components/CategoryFilter";
 import LoadingSpinner from "../../components/LoadingSpinner";
 import RecipeCard from "../../components/RecipeCard";
+import RecipeGridSkeleton from "../../components/RecipeGridSkeleton";
 import { COLORS } from "../../constants/colors";
 import { MealAPI } from "../../services/mealAPI";
 import { Category, Recipe } from "../../types";
@@ -29,6 +30,7 @@ import { Category, Recipe } from "../../types";
 const HomeScreen = (): React.ReactElement => {
   const router = useRouter();
   const { top } = useSafeAreaInsets();
+  const carouselRef = useRef<any>(null);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
@@ -100,14 +102,23 @@ const HomeScreen = (): React.ReactElement => {
   const handleRefresh = async (): Promise<void> => {
     setRefreshing(true);
     await loadData();
-    console.log("selectedCategory", selectedCategory);
     setRefreshing(false);
   };
 
   useEffect(() => {
-    console.log("selectedCategory:", selectedCategory);
     loadData();
   }, []);
+
+  // Auto-scroll carousel every 5 seconds
+  useEffect(() => {
+    if (featuredRecipes.length <= 1) return;
+
+    const interval = setInterval(() => {
+      carouselRef.current?.next();
+    }, 7000);
+
+    return () => clearInterval(interval);
+  }, [featuredRecipes]);
 
   if (loading && !refreshing)
     return <LoadingSpinner message="Loading delicious recipes..." />;
@@ -130,6 +141,7 @@ const HomeScreen = (): React.ReactElement => {
         {featuredRecipes.length > 0 && (
           <View style={homeStyles.featuredSection}>
             <Carousel
+              ref={carouselRef}
               loop={featuredRecipes.length > 1}
               width={CAROUSEL_WIDTH}
               height={CAROUSEL_HEIGHT}
@@ -238,7 +250,9 @@ const HomeScreen = (): React.ReactElement => {
             </Text>
           </View>
 
-          {recipes.length > 0 ? (
+          {refreshing ? (
+            <RecipeGridSkeleton count={14} />
+          ) : recipes.length > 0 ? (
             <FlatList
               data={recipes}
               renderItem={({ item }) => <RecipeCard recipe={item} />}
@@ -247,7 +261,6 @@ const HomeScreen = (): React.ReactElement => {
               columnWrapperStyle={homeStyles.row}
               contentContainerStyle={homeStyles.recipesGrid}
               scrollEnabled={false}
-              // ListEmptyComponent={}
             />
           ) : (
             <View style={homeStyles.emptyState}>

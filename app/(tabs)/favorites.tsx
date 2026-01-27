@@ -14,9 +14,9 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { favoritesStyles } from "../../assets/styles/favorites.styles";
-import LoadingSpinner from "../../components/LoadingSpinner";
 import NoFavoritesFound from "../../components/NoFavoritesFound";
 import RecipeCard from "../../components/RecipeCard";
+import RecipeGridSkeleton from "../../components/RecipeGridSkeleton";
 import { API_URL } from "../../constants/api";
 import { COLORS } from "../../constants/colors";
 import { FavoriteRecipe } from "../../types";
@@ -79,7 +79,6 @@ const FavoritesScreen = (): React.ReactElement => {
     ]);
   };
 
-  if (loading) return <LoadingSpinner message="Loading your favorites..." />;
   return (
     <View style={{ ...favoritesStyles.container, paddingTop: top }}>
       <StatusBar hidden={false} />
@@ -106,16 +105,20 @@ const FavoritesScreen = (): React.ReactElement => {
         </View>
 
         <View style={favoritesStyles.recipesSection}>
-          <FlatList
-            data={favoriteRecipes}
-            renderItem={({ item }) => <RecipeCard recipe={item} />}
-            keyExtractor={(item) => (item.id || item.recipeId).toString()}
-            numColumns={2}
-            columnWrapperStyle={favoritesStyles.row}
-            contentContainerStyle={favoritesStyles.recipesGrid}
-            scrollEnabled={false}
-            ListEmptyComponent={<NoFavoritesFound />}
-          />
+          {loading || refreshing ? (
+            <RecipeGridSkeleton count={6} showDescription={false} />
+          ) : (
+            <FlatList
+              data={favoriteRecipes}
+              renderItem={({ item }) => <RecipeCard recipe={item} />}
+              keyExtractor={(item) => (item.id || item.recipeId).toString()}
+              numColumns={2}
+              columnWrapperStyle={favoritesStyles.row}
+              contentContainerStyle={favoritesStyles.recipesGrid}
+              scrollEnabled={false}
+              ListEmptyComponent={<NoFavoritesFound />}
+            />
+          )}
         </View>
       </ScrollView>
     </View>

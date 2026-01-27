@@ -1,11 +1,11 @@
 import React, { useRef, useState } from "react";
 import {
-  View,
-  TextInput,
-  StyleSheet,
   Keyboard,
   NativeSyntheticEvent,
+  StyleSheet,
+  TextInput,
   TextInputKeyPressEventData,
+  View,
 } from "react-native";
 import { COLORS } from "../constants/colors";
 
@@ -23,7 +23,7 @@ export default function CodeInput({
   autoFocus = false,
 }: CodeInputProps): React.ReactElement {
   const [focusedIndex, setFocusedIndex] = useState<number | null>(
-    autoFocus ? 0 : null
+    autoFocus ? 0 : null,
   );
   const inputRefs = useRef<(TextInput | null)[]>([]);
 
@@ -79,13 +79,16 @@ export default function CodeInput({
 
   const handleKeyPress = (
     e: NativeSyntheticEvent<TextInputKeyPressEventData>,
-    index: number
+    index: number,
   ) => {
     if (e.nativeEvent.key === "Backspace") {
       const currentValue = value[index];
 
       if (!currentValue && index > 0) {
-        // Move to previous input if current is empty
+        // Clear previous input and move focus
+        const newValue = value.split("");
+        newValue[index - 1] = "";
+        onChangeText(newValue.join(""));
         inputRefs.current[index - 1]?.focus();
       }
     }
@@ -101,7 +104,7 @@ export default function CodeInput({
       {digits.map((digit, index) => (
         <TextInput
           key={index}
-          ref={(ref) => (inputRefs.current[index] = ref)}
+          ref={(ref) => (inputRefs.current[index] = ref) as any}
           style={[
             styles.input,
             focusedIndex === index && styles.inputFocused,
@@ -116,6 +119,8 @@ export default function CodeInput({
           maxLength={1}
           autoFocus={autoFocus && index === 0}
           selectTextOnFocus
+          scrollEnabled={false}
+          textAlignVertical="center"
         />
       ))}
     </View>
@@ -141,6 +146,8 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     borderWidth: 2,
     borderColor: COLORS.border,
+    padding: 0,
+    includeFontPadding: false,
   },
   inputFocused: {
     borderColor: COLORS.primary,

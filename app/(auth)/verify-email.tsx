@@ -10,6 +10,7 @@ import {
   ScrollView,
 } from "react-native";
 import { useSignUp } from "@clerk/clerk-expo";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { authStyles } from "../../assets/styles/auth.styles";
 import { Image } from "expo-image";
 import { COLORS } from "../../constants/colors";
@@ -21,6 +22,7 @@ interface VerifyEmailProps {
 
 const VerifyEmail = ({ email, onBack }: VerifyEmailProps): React.ReactElement => {
   const { isLoaded, signUp, setActive } = useSignUp();
+  const { top } = useSafeAreaInsets();
   const [code, setCode] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
   const keyboardBehavior = Platform.OS === "ios" ? "padding" : "height";
@@ -50,7 +52,7 @@ const VerifyEmail = ({ email, onBack }: VerifyEmailProps): React.ReactElement =>
   };
 
   return (
-    <View style={authStyles.container}>
+    <View style={{ ...authStyles.container, paddingTop: top }}>
       <KeyboardAvoidingView
         style={authStyles.keyboardView}
         behavior={keyboardBehavior}

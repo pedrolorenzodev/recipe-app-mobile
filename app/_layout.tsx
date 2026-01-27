@@ -4,6 +4,12 @@ import { Stack } from "expo-router";
 import React from "react";
 import { ActivityIndicator, View } from "react-native";
 
+const publishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY!;
+
+if (!publishableKey) {
+  throw new Error("Missing Publishable Key.");
+}
+
 function RootLayoutNav(): React.ReactElement | null {
   const { isLoaded } = useAuth();
 
@@ -17,8 +23,20 @@ function RootLayoutNav(): React.ReactElement | null {
 
   return (
     <Stack screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="(auth)" options={{ animation: "slide_from_left" }} />
-      <Stack.Screen name="(tabs)" />
+      <Stack.Screen 
+        name="(auth)" 
+        options={{ 
+          animation: "none",
+          presentation: "card"
+        }} 
+      />
+      <Stack.Screen 
+        name="(tabs)" 
+        options={{ 
+          animation: "none",
+          presentation: "card"
+        }} 
+      />
       <Stack.Screen name="recipe/[id]" />
     </Stack>
   );
@@ -26,7 +44,7 @@ function RootLayoutNav(): React.ReactElement | null {
 
 export default function RootLayout(): React.ReactElement {
   return (
-    <ClerkProvider tokenCache={tokenCache}>
+    <ClerkProvider tokenCache={tokenCache} publishableKey={publishableKey}>
       <RootLayoutNav />
     </ClerkProvider>
   );

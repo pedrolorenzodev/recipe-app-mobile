@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -11,6 +11,7 @@ import {
 } from "react-native";
 import { useRouter } from "expo-router";
 import { useSignIn } from "@clerk/clerk-expo";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { authStyles } from "../../assets/styles/auth.styles";
 import { Image } from "expo-image";
 import { COLORS } from "../../constants/colors";
@@ -18,8 +19,8 @@ import { Ionicons } from "@expo/vector-icons";
 
 const SignInScreen = (): React.ReactElement => {
   const router = useRouter();
-
   const { signIn, setActive, isLoaded } = useSignIn();
+  const { top } = useSafeAreaInsets();
 
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
@@ -28,44 +29,39 @@ const SignInScreen = (): React.ReactElement => {
   const keyboardBehavior = Platform.OS === "ios" ? "padding" : "height";
   const verticalOffset = Platform.OS === "ios" ? 64 : 0;
 
-  useEffect(() => {
-    console.log(email);
-  }, [email]);
-
   const handleSignIn = async (): Promise<void> => {
     if (!email || !password) {
       Alert.alert("Error", "Please fill in all fields");
       return;
     }
 
-    if (!isLoaded) return; // Check if CLERK is loaded
+    if (!isLoaded) return;
 
     setLoading(true);
 
     try {
       const signInAttempt = await signIn.create({
-        identifier: email,
+        identifier: email.trim(),
         password: password,
       });
 
-      // If sign-in process is complete, set the created session as active
-      // and redirect the user
       if (signInAttempt.status === "complete") {
         await setActive({ session: signInAttempt.createdSessionId });
+        router.replace("/(tabs)" as any);
       } else {
-        Alert.alert("Error", "Sign in failed. Please try again.");
-        console.error(JSON.stringify(signInAttempt, null, 2));
+        Alert.alert("Error", "Unable to sign in. Please try again.");
       }
     } catch (err: any) {
-      Alert.alert("Error", err.errors?.[0]?.message || "Sign in failed");
-      console.error(JSON.stringify(err, null, 2));
+      const errorMessage =
+        err.errors?.[0]?.message || "Sign in failed. Please check your credentials.";
+      Alert.alert("Error", errorMessage);
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <View style={authStyles.container}>
+    <View style={{ ...authStyles.container, paddingTop: top }}>
       <KeyboardAvoidingView
         style={authStyles.keyboardView}
         behavior={keyboardBehavior}
@@ -84,9 +80,7 @@ const SignInScreen = (): React.ReactElement => {
             <Text style={authStyles.title}>Welcome Back</Text>
           </View>
 
-          {/* FORM CONTAINER */}
           <View style={authStyles.formContainer}>
-            {/* Email Input */}
             <View style={authStyles.inputContainer}>
               <TextInput
                 style={authStyles.textInput}
@@ -99,7 +93,6 @@ const SignInScreen = (): React.ReactElement => {
               />
             </View>
 
-            {/* PASSWORD INPUT*/}
             <View style={authStyles.inputContainer}>
               <TextInput
                 style={authStyles.textInput}
@@ -136,7 +129,6 @@ const SignInScreen = (): React.ReactElement => {
               </Text>
             </TouchableOpacity>
 
-            {/* Sign Up Link */}
             <TouchableOpacity
               style={authStyles.linkContainer}
               onPress={() => router.push("/(auth)/sign-up" as any)}

@@ -11,6 +11,7 @@ import {
 } from "react-native";
 import { useRouter } from "expo-router";
 import { useSignUp } from "@clerk/clerk-expo";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { authStyles } from "../../assets/styles/auth.styles";
 import { Image } from "expo-image";
 import { Ionicons } from "@expo/vector-icons";
@@ -20,6 +21,7 @@ import VerifyEmail from "./verify-email";
 const SignUpScreen = (): React.ReactElement => {
   const router = useRouter();
   const { isLoaded, signUp } = useSignUp();
+  const { top } = useSafeAreaInsets();
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [showPassword, setShowPassword] = useState<boolean>(false);
@@ -65,7 +67,7 @@ const SignUpScreen = (): React.ReactElement => {
     );
 
   return (
-    <View style={authStyles.container}>
+    <View style={{ ...authStyles.container, paddingTop: top }}>
       <KeyboardAvoidingView
         behavior={keyboardBehavior}
         keyboardVerticalOffset={verticalOffset}

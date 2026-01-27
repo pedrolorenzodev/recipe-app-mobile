@@ -4,7 +4,7 @@
     "slug": "recipefinder",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/recipe-finder.png",
+    "icon": "./assets/images/recipe-finder-icon.png",
     "scheme": "recipefinder",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
@@ -14,7 +14,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/recipe-finder.png",
+        "foregroundImage": "./assets/images/recipe-finder-icon.png",
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
@@ -23,14 +23,14 @@
     },
     "web": {
       "output": "static",
-      "favicon": "./assets/images/recipe-finder.png"
+      "favicon": "./assets/images/recipe-finder-icon.png"
     },
     "plugins": [
       "expo-router",
       [
         "expo-splash-screen",
         {
-          "image": "./assets/images/recipe-finder-splash.png",
+          "image": "./assets/images/recipe-finder-icon.png",
           "imageWidth": 200,
           "resizeMode": "contain",
           "backgroundColor": "#ffffff",

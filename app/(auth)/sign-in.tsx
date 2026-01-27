@@ -1,21 +1,21 @@
+import { useSignIn } from "@clerk/clerk-expo";
+import { Ionicons } from "@expo/vector-icons";
+import { Image } from "expo-image";
+import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import {
-  View,
-  Text,
   Alert,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
+  Text,
   TextInput,
   TouchableOpacity,
+  View,
 } from "react-native";
-import { useRouter } from "expo-router";
-import { useSignIn } from "@clerk/clerk-expo";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { authStyles } from "../../assets/styles/auth.styles";
-import { Image } from "expo-image";
 import { COLORS } from "../../constants/colors";
-import { Ionicons } from "@expo/vector-icons";
 
 const SignInScreen = (): React.ReactElement => {
   const router = useRouter();
@@ -48,13 +48,29 @@ const SignInScreen = (): React.ReactElement => {
       if (signInAttempt.status === "complete") {
         await setActive({ session: signInAttempt.createdSessionId });
         router.replace("/(tabs)" as any);
+      } else if (signInAttempt.status === "needs_second_factor") {
+        await signInAttempt.prepareSecondFactor({
+          strategy: "email_code",
+        });
+        router.push({
+          pathname: "/(auth)/verify-code",
+          params: { email: email.trim(), type: "sign-in" },
+        } as any);
       } else {
-        Alert.alert("Error", "Unable to sign in. Please try again.");
+        console.log("Sign in status:", signInAttempt.status);
+        console.log("Sign in attempt:", JSON.stringify(signInAttempt, null, 2));
+        Alert.alert(
+          "Error",
+          "Sign in incomplete. Status: " + signInAttempt.status,
+        );
       }
     } catch (err: any) {
       const errorMessage =
-        err.errors?.[0]?.message || "Sign in failed. Please check your credentials.";
+        err.errors?.[0]?.longMessage ||
+        err.errors?.[0]?.message ||
+        "Sign in failed. Please check your credentials.";
       Alert.alert("Error", errorMessage);
+      console.error("Sign in error:", JSON.stringify(err, null, 2));
     } finally {
       setLoading(false);
     }

@@ -1,36 +1,36 @@
 {
   "expo": {
     "name": "Recipe Finder",
-    "slug": "recipe-finder",
+    "slug": "recipefinder",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
-    "scheme": "recipe-finder",
+    "icon": "./assets/images/recipe-finder.png",
+    "scheme": "recipefinder",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.pedrolorenzo.recipe-finder"
+      "bundleIdentifier": "com.pedrolorenzo.recipefinder"
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "foregroundImage": "./assets/images/recipe-finder.png",
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
-      "package": "com.pedrolorenzo.recipe-finder"
+      "package": "com.pedrolorenzo.recipefinder"
     },
     "web": {
       "output": "static",
-      "favicon": "./assets/images/favicon.png"
+      "favicon": "./assets/images/recipe-finder.png"
     },
     "plugins": [
       "expo-router",
       [
         "expo-splash-screen",
         {
-          "image": "./assets/images/splash-icon.png",
+          "image": "./assets/images/recipe-finder-splash.png",
           "imageWidth": 200,
           "resizeMode": "contain",
           "backgroundColor": "#ffffff",

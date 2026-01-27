@@ -7,5 +7,27 @@ export default function AuthRoutesLayout(): React.ReactElement | null {
 
   if (isSignedIn) return <Redirect href={"/" as any} />;
 
-  return <Stack screenOptions={{ headerShown: false }} />;
+  return (
+    <Stack screenOptions={{ headerShown: false }}>
+      <Stack.Screen
+        name="sign-in"
+        options={{
+          animation: "default",
+        }}
+      />
+      <Stack.Screen
+        name="sign-up"
+        options={{
+          animation: "default",
+        }}
+      />
+      <Stack.Screen
+        name="verify-code"
+        options={{
+          animation: "slide_from_right",
+          presentation: "card",
+        }}
+      />
+    </Stack>
+  );
 }

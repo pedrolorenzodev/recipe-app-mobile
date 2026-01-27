@@ -16,7 +16,6 @@ import { authStyles } from "../../assets/styles/auth.styles";
 import { Image } from "expo-image";
 import { Ionicons } from "@expo/vector-icons";
 import { COLORS } from "../../constants/colors";
-import VerifyEmail from "./verify-email";
 
 const SignUpScreen = (): React.ReactElement => {
   const router = useRouter();
@@ -26,8 +25,6 @@ const SignUpScreen = (): React.ReactElement => {
   const [password, setPassword] = useState<string>("");
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
-  const [pendingVerification, setPendingVerification] =
-    useState<boolean>(false);
   const keyboardBehavior = Platform.OS === "ios" ? "padding" : "height";
   const verticalOffset = Platform.OS === "ios" ? 64 : 0;
 
@@ -49,7 +46,11 @@ const SignUpScreen = (): React.ReactElement => {
       await signUp.create({ emailAddress: email, password: password });
 
       await signUp.prepareEmailAddressVerification({ strategy: "email_code" });
-      setPendingVerification(true);
+      
+      router.push({
+        pathname: "/(auth)/verify-code",
+        params: { email: email.trim(), type: "sign-up" },
+      } as any);
     } catch (err: any) {
       Alert.alert(
         "Error",
@@ -60,11 +61,6 @@ const SignUpScreen = (): React.ReactElement => {
       setLoading(false);
     }
   };
-
-  if (pendingVerification)
-    return (
-      <VerifyEmail email={email} onBack={() => setPendingVerification(false)} />
-    );
 
   return (
     <View style={{ ...authStyles.container, paddingTop: top }}>

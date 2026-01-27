@@ -1,4 +1,4 @@
-import { StyleSheet, Dimensions } from "react-native";
+import { Dimensions, StyleSheet } from "react-native";
 import { COLORS } from "../../constants/colors";
 
 const { height } = Dimensions.get("window");
@@ -37,20 +37,23 @@ export const authStyles = StyleSheet.create({
     fontSize: 16,
     color: COLORS.textLight,
     textAlign: "center",
-    marginBottom: 30,
   },
   formContainer: {
     flex: 1,
   },
   inputContainer: {
     marginBottom: 20,
+    flexDirection: "row",
+    alignItems: "center",
     position: "relative",
   },
   textInput: {
+    flex: 1,
     fontSize: 16,
     color: COLORS.text,
     paddingVertical: 16,
     paddingHorizontal: 20,
+    paddingRight: 50,
     backgroundColor: COLORS.background,
     borderRadius: 12,
     borderWidth: 1,
@@ -58,9 +61,8 @@ export const authStyles = StyleSheet.create({
   },
   eyeButton: {
     position: "absolute",
-    right: 16,
-    top: 16,
-    padding: 4,
+    right: 12,
+    padding: 8,
   },
   authButton: {
     backgroundColor: COLORS.primary,

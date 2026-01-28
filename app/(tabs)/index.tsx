@@ -1,7 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
 import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
-import { useRouter } from "expo-router";
+import { useRouter, useNavigation } from "expo-router";
 import React, { useEffect, useRef, useState } from "react";
 import {
   FlatList,
@@ -29,8 +29,10 @@ import { Category, MealDBMeal, Recipe } from "../../types";
 
 const HomeScreen = (): React.ReactElement => {
   const router = useRouter();
+  const navigation = useNavigation();
   const { top } = useSafeAreaInsets();
   const carouselRef = useRef<any>(null);
+  const scrollViewRef = useRef<ScrollView>(null);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
@@ -231,6 +233,16 @@ const HomeScreen = (): React.ReactElement => {
     return () => clearInterval(interval);
   }, [featuredRecipes]);
 
+  // Scroll to top when tab is pressed
+  useEffect(() => {
+    const unsubscribe = navigation.addListener("tabPress" as any, (e: any) => {
+      // Scroll to top with animation
+      scrollViewRef.current?.scrollTo({ y: 0, animated: true });
+    });
+
+    return unsubscribe;
+  }, [navigation]);
+
   if (loading && !refreshing)
     return <LoadingSpinner message="Loading delicious recipes..." />;
 
@@ -238,6 +250,7 @@ const HomeScreen = (): React.ReactElement => {
     <View style={{ ...homeStyles.container, paddingTop: top }}>
       <StatusBar hidden={false} />
       <ScrollView
+        ref={scrollViewRef}
         showsVerticalScrollIndicator={false}
         refreshControl={
           <RefreshControl

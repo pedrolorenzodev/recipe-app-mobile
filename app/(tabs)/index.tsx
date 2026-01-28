@@ -1,7 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
 import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
-import { useRouter, useNavigation } from "expo-router";
+import { useNavigation, useRouter } from "expo-router";
 import React, { useEffect, useRef, useState } from "react";
 import {
   FlatList,
@@ -236,8 +236,10 @@ const HomeScreen = (): React.ReactElement => {
   // Scroll to top when tab is pressed
   useEffect(() => {
     const unsubscribe = navigation.addListener("tabPress" as any, (e: any) => {
-      // Scroll to top with animation
-      scrollViewRef.current?.scrollTo({ y: 0, animated: true });
+      // Smooth scroll to top with a slight delay for smoother animation
+      setTimeout(() => {
+        scrollViewRef.current?.scrollTo({ y: 0, animated: true });
+      }, 100);
     });
 
     return unsubscribe;
@@ -251,7 +253,8 @@ const HomeScreen = (): React.ReactElement => {
       <StatusBar hidden={false} />
       <ScrollView
         ref={scrollViewRef}
-        showsVerticalScrollIndicator={false}
+        showsVerticalScrollIndicator={true}
+        indicatorStyle="black"
         refreshControl={
           <RefreshControl
             refreshing={refreshing}

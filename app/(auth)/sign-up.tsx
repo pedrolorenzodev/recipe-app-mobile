@@ -1,20 +1,20 @@
+import { useSignUp } from "@clerk/clerk-expo";
+import { Ionicons } from "@expo/vector-icons";
+import { Image } from "expo-image";
+import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import {
-  View,
-  Text,
-  Platform,
+  Alert,
   KeyboardAvoidingView,
+  Platform,
   ScrollView,
+  Text,
   TextInput,
   TouchableOpacity,
-  Alert,
+  View,
 } from "react-native";
-import { useRouter } from "expo-router";
-import { useSignUp } from "@clerk/clerk-expo";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { authStyles } from "../../assets/styles/auth.styles";
-import { Image } from "expo-image";
-import { Ionicons } from "@expo/vector-icons";
 import { COLORS } from "../../constants/colors";
 
 const SignUpScreen = (): React.ReactElement => {
@@ -26,7 +26,7 @@ const SignUpScreen = (): React.ReactElement => {
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
   const keyboardBehavior = Platform.OS === "ios" ? "padding" : "height";
-  const verticalOffset = Platform.OS === "ios" ? 64 : 0;
+  const verticalOffset = 0;
 
   const handleSignUp = async (): Promise<void> => {
     if (!email || !password) {
@@ -46,7 +46,7 @@ const SignUpScreen = (): React.ReactElement => {
       await signUp.create({ emailAddress: email, password: password });
 
       await signUp.prepareEmailAddressVerification({ strategy: "email_code" });
-      
+
       router.push({
         pathname: "/(auth)/verify-code",
         params: { email: email.trim(), type: "sign-up" },
@@ -54,7 +54,7 @@ const SignUpScreen = (): React.ReactElement => {
     } catch (err: any) {
       Alert.alert(
         "Error",
-        err.errors?.[0]?.message || "Failed to create account"
+        err.errors?.[0]?.message || "Failed to create account",
       );
       console.error(JSON.stringify(err, null, 2));
     } finally {

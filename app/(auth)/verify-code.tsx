@@ -45,7 +45,7 @@ const VerifyCodeScreen = (): React.ReactElement => {
   const [canResend, setCanResend] = useState<boolean>(false);
   const [hasError, setHasError] = useState<boolean>(false);
   const keyboardBehavior = Platform.OS === "ios" ? "padding" : "height";
-  const verticalOffset = Platform.OS === "ios" ? 64 : 0;
+  const verticalOffset = 0;
 
   // Countdown timer
   useEffect(() => {

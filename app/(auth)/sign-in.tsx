@@ -28,7 +28,7 @@ const SignInScreen = (): React.ReactElement => {
   const [loading, setLoading] = useState<boolean>(false);
   const [hasError, setHasError] = useState<boolean>(false);
   const keyboardBehavior = Platform.OS === "ios" ? "padding" : "height";
-  const verticalOffset = Platform.OS === "ios" ? 64 : 0;
+  const verticalOffset = 0;
 
   const handleEmailChange = (text: string) => {
     setEmail(text);
@@ -107,10 +107,7 @@ const SignInScreen = (): React.ReactElement => {
           <View style={authStyles.formContainer}>
             <View style={authStyles.inputContainer}>
               <TextInput
-                style={[
-                  authStyles.textInput,
-                  hasError && styles.inputError,
-                ]}
+                style={[authStyles.textInput, hasError && styles.inputError]}
                 placeholder="Enter email"
                 placeholderTextColor={COLORS.textLight}
                 value={email}
@@ -122,10 +119,7 @@ const SignInScreen = (): React.ReactElement => {
 
             <View style={authStyles.inputContainer}>
               <TextInput
-                style={[
-                  authStyles.textInput,
-                  hasError && styles.inputError,
-                ]}
+                style={[authStyles.textInput, hasError && styles.inputError]}
                 placeholder="Enter password"
                 placeholderTextColor={COLORS.textLight}
                 value={password}

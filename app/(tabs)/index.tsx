@@ -86,20 +86,32 @@ const HomeScreen = (): React.ReactElement => {
     }
   };
 
+  // Shuffle array using Fisher-Yates algorithm
+  const shuffleArray = <T,>(array: T[]): T[] => {
+    const shuffled = [...array];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    return shuffled;
+  };
+
   const loadCategoryData = async (category: string): Promise<void> => {
     try {
       const meals = await MealAPI.filterByCategory(category);
 
-      // Store all meal IDs for "load more" functionality
+      // Store all meal IDs and shuffle for random order
       const allMealIds = meals
         .filter((meal) => meal?.idMeal)
         .map((meal) => meal.idMeal);
 
-      setCategoryMealIds(allMealIds);
-      setHasMore(allMealIds.length > 14);
+      const shuffledIds = shuffleArray(allMealIds);
 
-      // Load first 14 meals
-      const firstBatch = allMealIds.slice(0, 14);
+      setCategoryMealIds(shuffledIds);
+      setHasMore(shuffledIds.length > 14);
+
+      // Load first 14 meals from shuffled array
+      const firstBatch = shuffledIds.slice(0, 14);
       await loadMealsByIds(firstBatch, false);
     } catch (error) {
       console.error("Error loading category data:", error);
@@ -253,8 +265,6 @@ const HomeScreen = (): React.ReactElement => {
       <StatusBar hidden={false} />
       <ScrollView
         ref={scrollViewRef}
-        showsVerticalScrollIndicator={true}
-        indicatorStyle="black"
         refreshControl={
           <RefreshControl
             refreshing={refreshing}

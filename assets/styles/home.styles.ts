@@ -177,6 +177,10 @@ export const homeStyles = StyleSheet.create({
   selectedCategoryText: {
     color: COLORS.white,
   },
+  loadMoreButtonContainer: {
+    marginTop: 25,
+    alignSelf: "center",
+  },
   loadMoreButton: {
     width: 50,
     height: 50,
@@ -196,6 +200,17 @@ export const homeStyles = StyleSheet.create({
     shadowOpacity: 0.2,
     shadowRadius: 8,
     elevation: 4,
+  },
+  loadingMoreContainer: {
+    width: 50,
+    height: 50,
+    marginTop: 25,
+    justifyContent: "center",
+    alignItems: "center",
+    alignSelf: "center",
+  },
+  loadingMoreIndicator: {
+    marginTop: 8,
   },
 });
 

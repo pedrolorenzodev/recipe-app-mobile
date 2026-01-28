@@ -404,11 +404,13 @@ const HomeScreen = (): React.ReactElement => {
 
               {hasMore &&
                 (loadingMore ? (
-                  <ActivityIndicator
-                    size="large"
-                    color={COLORS.primary}
-                    style={{ marginTop: 36, alignSelf: "center" }}
-                  />
+                  <View style={homeStyles.loadingMoreContainer}>
+                    <ActivityIndicator
+                      size="large"
+                      color={COLORS.primary}
+                      style={homeStyles.loadingMoreIndicator}
+                    />
+                  </View>
                 ) : (
                   <TouchableOpacity
                     style={homeStyles.loadMoreButton}

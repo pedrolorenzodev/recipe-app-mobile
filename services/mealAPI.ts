@@ -1,10 +1,10 @@
 import {
-  MealDBMeal,
-  MealDBCategory,
-  MealDBSearchResponse,
-  MealDBCategoriesResponse,
-  Recipe,
   MealAPIService,
+  MealDBCategoriesResponse,
+  MealDBCategory,
+  MealDBMeal,
+  MealDBSearchResponse,
+  Recipe,
 } from "../types";
 
 const BASE_URL = "https://www.themealdb.com/api/json/v1/1";
@@ -14,7 +14,7 @@ export const MealAPI: MealAPIService = {
   searchMealsByName: async (query: string): Promise<MealDBMeal[]> => {
     try {
       const response = await fetch(
-        `${BASE_URL}/search.php?s=${encodeURIComponent(query)}`
+        `${BASE_URL}/search.php?s=${encodeURIComponent(query)}`,
       );
       // "encodeURIComponent" chicken and rice => %20 => Chicken%20and%20Rice
       const data: MealDBSearchResponse = await response.json();
@@ -28,7 +28,18 @@ export const MealAPI: MealAPIService = {
   // lookup full meal details by id
   getMealById: async (id: string): Promise<MealDBMeal | null> => {
     try {
+      if (!id || typeof id !== "string") {
+        console.warn("Invalid meal ID:", id);
+        return null;
+      }
+
       const response = await fetch(`${BASE_URL}/lookup.php?i=${id}`);
+
+      if (!response.ok) {
+        console.warn(`HTTP error ${response.status} for meal ID: ${id}`);
+        return null;
+      }
+
       const data: MealDBSearchResponse = await response.json();
       return data.meals ? data.meals[0] : null;
     } catch (error) {
@@ -79,7 +90,7 @@ export const MealAPI: MealAPIService = {
   filterByIngredient: async (ingredient: string): Promise<MealDBMeal[]> => {
     try {
       const response = await fetch(
-        `${BASE_URL}/filter.php?i=${encodeURIComponent(ingredient)}`
+        `${BASE_URL}/filter.php?i=${encodeURIComponent(ingredient)}`,
       );
       const data: MealDBSearchResponse = await response.json();
       return data.meals || [];
@@ -93,7 +104,7 @@ export const MealAPI: MealAPIService = {
   filterByCategory: async (category: string): Promise<MealDBMeal[]> => {
     try {
       const response = await fetch(
-        `${BASE_URL}/filter.php?c=${encodeURIComponent(category)}`
+        `${BASE_URL}/filter.php?c=${encodeURIComponent(category)}`,
       );
       const data: MealDBSearchResponse = await response.json();
       return data.meals || [];
@@ -124,9 +135,7 @@ export const MealAPI: MealAPIService = {
 
     // extract instructions
     const instructions = meal.strInstructions
-      ? meal.strInstructions
-          .split(/\r?\n/)
-          .filter((step) => step.trim())
+      ? meal.strInstructions.split(/\r?\n/).filter((step) => step.trim())
       : [];
 
     return {

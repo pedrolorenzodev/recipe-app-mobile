@@ -177,6 +177,35 @@ export const homeStyles = StyleSheet.create({
   selectedCategoryText: {
     color: COLORS.white,
   },
+  loadMoreButton: {
+    backgroundColor: COLORS.card,
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    paddingVertical: 16,
+    paddingHorizontal: 24,
+    marginTop: 16,
+    marginBottom: 8,
+    shadowColor: COLORS.shadow,
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  loadMoreContent: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 8,
+  },
+  loadMoreText: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: COLORS.primary,
+  },
 });
 
 export const recipeCardStyles = StyleSheet.create({

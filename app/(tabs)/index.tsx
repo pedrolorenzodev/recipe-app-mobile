@@ -25,7 +25,7 @@ import RecipeCard from "../../components/RecipeCard";
 import RecipeGridSkeleton from "../../components/RecipeGridSkeleton";
 import { COLORS } from "../../constants/colors";
 import { MealAPI } from "../../services/mealAPI";
-import { Category, Recipe } from "../../types";
+import { Category, MealDBMeal, Recipe } from "../../types";
 
 const HomeScreen = (): React.ReactElement => {
   const router = useRouter();
@@ -38,6 +38,9 @@ const HomeScreen = (): React.ReactElement => {
   const [loading, setLoading] = useState<boolean>(true);
   const [refreshing, setRefreshing] = useState<boolean>(false);
   const [categoryLoading, setCategoryLoading] = useState<boolean>(false);
+  const [categoryMealIds, setCategoryMealIds] = useState<string[]>([]);
+  const [loadingMore, setLoadingMore] = useState<boolean>(false);
+  const [hasMore, setHasMore] = useState<boolean>(true);
 
   const loadData = async (): Promise<void> => {
     try {
@@ -84,18 +87,120 @@ const HomeScreen = (): React.ReactElement => {
   const loadCategoryData = async (category: string): Promise<void> => {
     try {
       const meals = await MealAPI.filterByCategory(category);
-      const transformedMeals = meals
+
+      // Store all meal IDs for "load more" functionality
+      const allMealIds = meals
+        .filter((meal) => meal?.idMeal)
+        .map((meal) => meal.idMeal);
+
+      setCategoryMealIds(allMealIds);
+      setHasMore(allMealIds.length > 14);
+
+      // Load first 14 meals
+      const firstBatch = allMealIds.slice(0, 14);
+      await loadMealsByIds(firstBatch, false);
+    } catch (error) {
+      console.error("Error loading category data:", error);
+      setRecipes([]);
+      setCategoryMealIds([]);
+      setHasMore(false);
+    }
+  };
+
+  const loadMealsByIds = async (
+    mealIds: string[],
+    append: boolean = false,
+  ): Promise<void> => {
+    try {
+      // Fetch full details in smaller batches to avoid overwhelming the API
+      const batchSize = 5;
+      const detailedMeals: (MealDBMeal | null)[] = [];
+
+      for (let i = 0; i < mealIds.length; i += batchSize) {
+        const batch = mealIds.slice(i, i + batchSize);
+        const batchResults = await Promise.all(
+          batch.map((id) => MealAPI.getMealById(id)),
+        );
+        detailedMeals.push(...batchResults);
+      }
+
+      const transformedMeals = detailedMeals
         .map((meal) => MealAPI.transformMealData(meal))
         .filter((meal): meal is Recipe => meal !== null);
 
-      setRecipes(transformedMeals);
+      if (append) {
+        setRecipes((prev) => [...prev, ...transformedMeals]);
+      } else {
+        setRecipes(transformedMeals);
+      }
     } catch (error) {
-      console.error("Error loading category data:", error);
+      console.error("Error loading meals by IDs:", error);
+    }
+  };
+
+  const loadRandomMeals = async (): Promise<void> => {
+    try {
+      const randomMeals = await MealAPI.getRandomMeals(14);
+      const transformedMeals = randomMeals
+        .map((meal) => MealAPI.transformMealData(meal))
+        .filter((meal): meal is Recipe => meal !== null);
+      setRecipes(transformedMeals);
+      setCategoryMealIds([]);
+      setHasMore(true); // Always can load more random meals
+    } catch (error) {
+      console.error("Error loading random meals:", error);
       setRecipes([]);
     }
   };
 
+  const loadMoreRecipes = async (): Promise<void> => {
+    if (loadingMore || !hasMore) return;
+
+    setLoadingMore(true);
+
+    try {
+      if (selectedCategory && categoryMealIds.length > 0) {
+        // Load more from category
+        const currentCount = recipes.length;
+        const nextBatch = categoryMealIds.slice(
+          currentCount,
+          currentCount + 14,
+        );
+
+        if (nextBatch.length === 0) {
+          setHasMore(false);
+          return;
+        }
+
+        await loadMealsByIds(nextBatch, true);
+        setHasMore(categoryMealIds.length > currentCount + nextBatch.length);
+      } else {
+        // Load more random meals
+        const randomMeals = await MealAPI.getRandomMeals(14);
+        const transformedMeals = randomMeals
+          .map((meal) => MealAPI.transformMealData(meal))
+          .filter((meal): meal is Recipe => meal !== null);
+
+        setRecipes((prev) => [...prev, ...transformedMeals]);
+      }
+    } catch (error) {
+      console.error("Error loading more recipes:", error);
+    } finally {
+      setLoadingMore(false);
+    }
+  };
+
   const handleCategorySelect = async (category: string): Promise<void> => {
+    // Toggle: if clicking the same category, deselect it
+    if (selectedCategory === category) {
+      setSelectedCategory(null);
+      setCategoryLoading(true);
+      await loadRandomMeals();
+      setCategoryLoading(false);
+      return;
+    }
+
+    // Select new category
     setSelectedCategory(category);
     setCategoryLoading(true);
     await loadCategoryData(category);
@@ -104,6 +209,9 @@ const HomeScreen = (): React.ReactElement => {
 
   const handleRefresh = async (): Promise<void> => {
     setRefreshing(true);
+    setSelectedCategory(null);
+    setCategoryMealIds([]);
+    setHasMore(true);
     await loadData();
     setRefreshing(false);
   };
@@ -256,15 +364,43 @@ const HomeScreen = (): React.ReactElement => {
           {refreshing || categoryLoading ? (
             <RecipeGridSkeleton count={14} />
           ) : recipes.length > 0 ? (
-            <FlatList
-              data={recipes}
-              renderItem={({ item }) => <RecipeCard recipe={item} />}
-              keyExtractor={(item) => item.id.toString()}
-              numColumns={2}
-              columnWrapperStyle={homeStyles.row}
-              contentContainerStyle={homeStyles.recipesGrid}
-              scrollEnabled={false}
-            />
+            <>
+              <FlatList
+                data={recipes}
+                renderItem={({ item }) => <RecipeCard recipe={item} />}
+                keyExtractor={(item) => item.id.toString()}
+                numColumns={2}
+                columnWrapperStyle={homeStyles.row}
+                contentContainerStyle={homeStyles.recipesGrid}
+                scrollEnabled={false}
+              />
+
+              {hasMore && (
+                <TouchableOpacity
+                  style={homeStyles.loadMoreButton}
+                  onPress={loadMoreRecipes}
+                  disabled={loadingMore}
+                  activeOpacity={0.7}
+                >
+                  {loadingMore ? (
+                    <View style={homeStyles.loadMoreContent}>
+                      <Text style={homeStyles.loadMoreText}>Loading...</Text>
+                    </View>
+                  ) : (
+                    <View style={homeStyles.loadMoreContent}>
+                      <Ionicons
+                        name="add-circle-outline"
+                        size={20}
+                        color={COLORS.primary}
+                      />
+                      <Text style={homeStyles.loadMoreText}>
+                        Load More Recipes
+                      </Text>
+                    </View>
+                  )}
+                </TouchableOpacity>
+              )}
+            </>
           ) : (
             <View style={homeStyles.emptyState}>
               <Ionicons

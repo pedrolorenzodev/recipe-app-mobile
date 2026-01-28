@@ -408,22 +408,11 @@ const HomeScreen = (): React.ReactElement => {
                   disabled={loadingMore}
                   activeOpacity={0.7}
                 >
-                  {loadingMore ? (
-                    <View style={homeStyles.loadMoreContent}>
-                      <Text style={homeStyles.loadMoreText}>Loading...</Text>
-                    </View>
-                  ) : (
-                    <View style={homeStyles.loadMoreContent}>
-                      <Ionicons
-                        name="add-circle-outline"
-                        size={20}
-                        color={COLORS.primary}
-                      />
-                      <Text style={homeStyles.loadMoreText}>
-                        Load More Recipes
-                      </Text>
-                    </View>
-                  )}
+                  <Ionicons
+                    name={loadingMore ? "hourglass-outline" : "add"}
+                    size={28}
+                    color={loadingMore ? COLORS.textLight : COLORS.primary}
+                  />
                 </TouchableOpacity>
               )}
             </>

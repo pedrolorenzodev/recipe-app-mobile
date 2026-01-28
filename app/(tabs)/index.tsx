@@ -4,6 +4,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import { useNavigation, useRouter } from "expo-router";
 import React, { useEffect, useRef, useState } from "react";
 import {
+  ActivityIndicator,
   FlatList,
   RefreshControl,
   ScrollView,
@@ -401,20 +402,20 @@ const HomeScreen = (): React.ReactElement => {
                 scrollEnabled={false}
               />
 
-              {hasMore && (
-                <TouchableOpacity
-                  style={homeStyles.loadMoreButton}
-                  onPress={loadMoreRecipes}
-                  disabled={loadingMore}
-                  activeOpacity={0.7}
-                >
-                  <Ionicons
-                    name={loadingMore ? "hourglass-outline" : "add"}
-                    size={28}
-                    color={loadingMore ? COLORS.textLight : COLORS.primary}
-                  />
-                </TouchableOpacity>
-              )}
+              {hasMore &&
+                (loadingMore ? (
+                  <View style={homeStyles.loadMoreButton}>
+                    <ActivityIndicator size="large" color={COLORS.primary} />
+                  </View>
+                ) : (
+                  <TouchableOpacity
+                    style={homeStyles.loadMoreButton}
+                    onPress={loadMoreRecipes}
+                    activeOpacity={0.7}
+                  >
+                    <Ionicons name="add" size={28} color={COLORS.primary} />
+                  </TouchableOpacity>
+                ))}
             </>
           ) : (
             <View style={homeStyles.emptyState}>

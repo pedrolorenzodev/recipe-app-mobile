@@ -92,4 +92,25 @@ export const authStyles = StyleSheet.create({
     color: COLORS.primary,
     fontWeight: "600",
   },
+  policyLinksContainer: {
+    alignItems: "center",
+    paddingTop: 20,
+    paddingBottom: 40,
+  },
+  policyText: {
+    fontSize: 13,
+    color: COLORS.textLight,
+    textAlign: "center",
+  },
+  policyLinks: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "center",
+    marginTop: 4,
+  },
+  policyLink: {
+    fontSize: 13,
+    color: COLORS.primary,
+    fontWeight: "600",
+  },
 });

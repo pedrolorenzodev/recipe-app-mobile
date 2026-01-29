@@ -1,7 +1,3 @@
-// ============================================================================
-// API Types - TheMealDB API Response Types
-// ============================================================================
-
 export interface MealDBMeal {
   idMeal: string;
   strMeal: string;
@@ -34,11 +30,6 @@ export interface MealDBSearchResponse {
 export interface MealDBCategoriesResponse {
   categories: MealDBCategory[] | null;
 }
-
-// ============================================================================
-// App Domain Types
-// ============================================================================
-
 export interface Recipe {
   id: string;
   title: string;
@@ -68,12 +59,8 @@ export interface FavoriteRecipe {
   image: string;
   cookTime: string;
   servings: string | number;
-  id?: number; // Transformed for RecipeCard compatibility
+  id?: number;
 }
-
-// ============================================================================
-// Component Props Types
-// ============================================================================
 
 export interface RecipeCardProps {
   recipe: Recipe | FavoriteRecipe;
@@ -94,17 +81,9 @@ export interface SafeScreenProps {
   children: React.ReactNode;
 }
 
-// ============================================================================
-// Navigation Types (Expo Router)
-// ============================================================================
-
 export interface RecipeParams {
   id: string;
 }
-
-// ============================================================================
-// API Service Types
-// ============================================================================
 
 export interface MealAPIService {
   searchMealsByName: (query: string) => Promise<MealDBMeal[]>;
@@ -116,10 +95,6 @@ export interface MealAPIService {
   filterByCategory: (category: string) => Promise<MealDBMeal[]>;
   transformMealData: (meal: MealDBMeal | null) => Recipe | null;
 }
-
-// ============================================================================
-// Theme Types (for colors)
-// ============================================================================
 
 export interface ThemeColors {
   primary: string;

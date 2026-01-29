@@ -7,6 +7,7 @@ const coffeeTheme = {
   textLight: "#9A8478",
   card: "#FFFFFF",
   shadow: "#000000",
+  error: "#DC2626",
 };
 
 const forestTheme = {
@@ -18,6 +19,7 @@ const forestTheme = {
   textLight: "#66BB6A",
   card: "#FFFFFF",
   shadow: "#000000",
+  error: "#DC2626",
 };
 
 const purpleTheme = {
@@ -29,6 +31,7 @@ const purpleTheme = {
   textLight: "#BA68C8",
   card: "#FFFFFF",
   shadow: "#000000",
+  error: "#DC2626",
 };
 
 const oceanTheme = {
@@ -40,6 +43,7 @@ const oceanTheme = {
   textLight: "#4FC3F7",
   card: "#FFFFFF",
   shadow: "#000000",
+  error: "#DC2626",
 };
 
 const sunsetTheme = {
@@ -51,6 +55,7 @@ const sunsetTheme = {
   textLight: "#FFA494",
   card: "#FFFFFF",
   shadow: "#000000",
+  error: "#DC2626",
 };
 
 const mintTheme = {
@@ -62,6 +67,7 @@ const mintTheme = {
   textLight: "#66D9D9",
   card: "#FFFFFF",
   shadow: "#000000",
+  error: "#DC2626",
 };
 
 const midnightTheme = {
@@ -73,6 +79,7 @@ const midnightTheme = {
   textLight: "#7F8C8D",
   card: "#FFFFFF",
   shadow: "#000000",
+  error: "#DC2626",
 };
 
 const roseGoldTheme = {
@@ -84,6 +91,7 @@ const roseGoldTheme = {
   textLight: "#C9A9A6",
   card: "#FFFFFF",
   shadow: "#000000",
+  error: "#DC2626",
 };
 
 export const THEMES = {
@@ -97,5 +105,4 @@ export const THEMES = {
   roseGold: roseGoldTheme,
 };
 
-// 👇 change this to switch theme
 export const COLORS = THEMES.coffee;

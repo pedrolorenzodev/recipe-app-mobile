@@ -127,4 +127,43 @@ export const favoritesStyles = StyleSheet.create({
     fontWeight: "600",
     color: COLORS.white,
   },
+  accountSection: {
+    marginHorizontal: 16,
+    marginTop: 16,
+    backgroundColor: COLORS.card,
+    borderRadius: 16,
+    padding: 16,
+    shadowColor: COLORS.shadow,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  accountSectionTitle: {
+    fontSize: 16,
+    fontWeight: "700",
+    color: COLORS.text,
+    marginBottom: 12,
+  },
+  accountLink: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingVertical: 14,
+    borderBottomWidth: 1,
+    borderBottomColor: COLORS.border,
+  },
+  accountLinkLast: {
+    borderBottomWidth: 0,
+  },
+  accountLinkText: {
+    fontSize: 15,
+    fontWeight: "500",
+    color: COLORS.text,
+  },
+  deleteAccountText: {
+    fontSize: 15,
+    fontWeight: "600",
+    color: COLORS.error,
+  },
 });

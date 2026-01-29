@@ -2,6 +2,7 @@ import { useSignUp } from "@clerk/clerk-expo";
 import { Ionicons } from "@expo/vector-icons";
 import { Image } from "expo-image";
 import { useRouter } from "expo-router";
+import * as WebBrowser from "expo-web-browser";
 import React, { useState } from "react";
 import {
   Alert,
@@ -17,6 +18,11 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { authStyles } from "../../assets/styles/auth.styles";
 import { COLORS } from "../../constants/colors";
 
+const PRIVACY_POLICY_URL =
+  "https://pedrolorenzodev.github.io/recipe-finder-privacy/privacy.html";
+const TERMS_OF_SERVICE_URL =
+  "https://pedrolorenzodev.github.io/recipe-finder-privacy/terms.html";
+
 const SignUpScreen = (): React.ReactElement => {
   const router = useRouter();
   const { isLoaded, signUp } = useSignUp();
@@ -27,6 +33,14 @@ const SignUpScreen = (): React.ReactElement => {
   const [loading, setLoading] = useState<boolean>(false);
   const keyboardBehavior = Platform.OS === "ios" ? "padding" : "height";
   const verticalOffset = 0;
+
+  const handleOpenLink = async (url: string): Promise<void> => {
+    try {
+      await WebBrowser.openBrowserAsync(url);
+    } catch (error) {
+      console.log("Error opening link:", error);
+    }
+  };
 
   const handleSignUp = async (): Promise<void> => {
     if (!email || !password) {
@@ -146,6 +160,26 @@ const SignUpScreen = (): React.ReactElement => {
                 <Text style={authStyles.link}>Sign in</Text>
               </Text>
             </TouchableOpacity>
+
+            {/* Privacy & Terms Footer */}
+            <View style={authStyles.policyLinksContainer}>
+              <Text style={authStyles.policyText}>
+                By signing up, you agree to our
+              </Text>
+              <View style={authStyles.policyLinks}>
+                <TouchableOpacity
+                  onPress={() => handleOpenLink(TERMS_OF_SERVICE_URL)}
+                >
+                  <Text style={authStyles.policyLink}>Terms of Service</Text>
+                </TouchableOpacity>
+                <Text style={authStyles.policyText}> and </Text>
+                <TouchableOpacity
+                  onPress={() => handleOpenLink(PRIVACY_POLICY_URL)}
+                >
+                  <Text style={authStyles.policyLink}>Privacy Policy</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
           </View>
         </ScrollView>
       </KeyboardAvoidingView>

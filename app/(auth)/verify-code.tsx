@@ -86,7 +86,7 @@ const VerifyCodeScreen = (): React.ReactElement => {
 
         if (signInAttempt.status === "complete") {
           await setSignInActive!({ session: signInAttempt.createdSessionId });
-          router.replace("/(tabs)" as any);
+          router.dismiss();
         } else {
           setHasError(true);
           setCode(""); // Clear code on error
@@ -100,7 +100,7 @@ const VerifyCodeScreen = (): React.ReactElement => {
 
         if (signUpAttempt.status === "complete") {
           await setSignUpActive!({ session: signUpAttempt.createdSessionId });
-          router.replace("/(tabs)" as any);
+          router.dismiss();
         } else {
           setHasError(true);
           setCode(""); // Clear code on error

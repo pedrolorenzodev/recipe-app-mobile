@@ -62,7 +62,7 @@ const SignInScreen = (): React.ReactElement => {
 
       if (signInAttempt.status === "complete") {
         await setActive({ session: signInAttempt.createdSessionId });
-        router.replace("/(tabs)" as any);
+        router.dismiss();
       } else if (signInAttempt.status === "needs_second_factor") {
         await signInAttempt.prepareSecondFactor({
           strategy: "email_code",

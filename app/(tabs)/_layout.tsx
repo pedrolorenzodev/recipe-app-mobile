@@ -1,13 +1,13 @@
 import { Ionicons } from "@expo/vector-icons";
-import { Tabs, Redirect } from "expo-router";
+import { useAuth } from "@clerk/clerk-expo";
+import { Tabs } from "expo-router";
 import React from "react";
 import { COLORS } from "../../constants/colors";
-import { useAuth } from "@clerk/clerk-expo";
+import { useAuthGate } from "../../contexts/AuthGateContext";
 
-const TabsLayout = (): React.ReactElement | null => {
+const TabsLayout = (): React.ReactElement => {
   const { isSignedIn } = useAuth();
-
-  if (!isSignedIn) return <Redirect href={"/(auth)/sign-in" as any} />;
+  const { requireAuth } = useAuthGate();
 
   return (
     <Tabs
@@ -54,6 +54,14 @@ const TabsLayout = (): React.ReactElement | null => {
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="heart" color={color} size={size} />
           ),
+        }}
+        listeners={{
+          tabPress: (e) => {
+            if (!isSignedIn) {
+              e.preventDefault();
+              requireAuth();
+            }
+          },
         }}
       />
     </Tabs>

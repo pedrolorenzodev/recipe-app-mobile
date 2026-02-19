@@ -18,6 +18,7 @@ import { recipeDetailStyles } from "../../assets/styles/recipe-detail.styles";
 import LoadingSpinner from "../../components/LoadingSpinner";
 import { API_URL } from "../../constants/api";
 import { COLORS } from "../../constants/colors";
+import { useAuthGate } from "../../contexts/AuthGateContext";
 import { MealAPI } from "../../services/mealAPI";
 import { Recipe } from "../../types";
 
@@ -37,9 +38,11 @@ const RecipeDetailScreen = (): React.ReactElement => {
 
   const { user } = useUser();
   const userId = user?.id;
+  const { requireAuth } = useAuthGate();
 
   useEffect(() => {
     const checkIfSaved = async (): Promise<void> => {
+      if (!userId) return;
       try {
         const response = await fetch(`${API_URL}/favorites/${userId}`);
         const favorites = await response.json();
@@ -97,6 +100,7 @@ const RecipeDetailScreen = (): React.ReactElement => {
 
   const handleToggleSave = async (): Promise<void> => {
     if (!recipe) return;
+    if (!requireAuth()) return;
 
     setIsSaving(true);
     try {

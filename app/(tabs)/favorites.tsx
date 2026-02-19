@@ -1,4 +1,4 @@
-import { useClerk, useUser } from "@clerk/clerk-expo";
+import { useAuth, useClerk, useUser } from "@clerk/clerk-expo";
 import { Ionicons } from "@expo/vector-icons";
 import { useFocusEffect } from "expo-router";
 import * as WebBrowser from "expo-web-browser";
@@ -9,6 +9,7 @@ import {
   RefreshControl,
   ScrollView,
   StatusBar,
+  StyleSheet,
   Text,
   TouchableOpacity,
   View,
@@ -20,6 +21,7 @@ import RecipeCard from "../../components/RecipeCard";
 import RecipeGridSkeleton from "../../components/RecipeGridSkeleton";
 import { API_URL } from "../../constants/api";
 import { COLORS } from "../../constants/colors";
+import { useAuthGate } from "../../contexts/AuthGateContext";
 import { FavoriteRecipe } from "../../types";
 
 const PRIVACY_POLICY_URL =
@@ -28,9 +30,11 @@ const TERMS_OF_SERVICE_URL =
   "https://pedrolorenzodev.github.io/recipe-finder-privacy/terms.html";
 
 const FavoritesScreen = (): React.ReactElement => {
+  const { isSignedIn } = useAuth();
   const { signOut } = useClerk();
   const { user } = useUser();
   const { top } = useSafeAreaInsets();
+  const { requireAuth } = useAuthGate();
   const [favoriteRecipes, setFavoriteRecipes] = useState<FavoriteRecipe[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [refreshing, setRefreshing] = useState<boolean>(false);
@@ -159,6 +163,34 @@ const FavoritesScreen = (): React.ReactElement => {
     }
   };
 
+  if (!isSignedIn) {
+    return (
+      <View style={{ ...favoritesStyles.container, paddingTop: top }}>
+        <StatusBar hidden={false} />
+        <View style={favoritesStyles.header}>
+          <Text style={favoritesStyles.title}>Favorites</Text>
+        </View>
+        <View style={unauthStyles.container}>
+          <View style={unauthStyles.iconContainer}>
+            <Ionicons name="heart-outline" size={48} color={COLORS.primary} />
+          </View>
+          <Text style={unauthStyles.title}>Save Your Favorites</Text>
+          <Text style={unauthStyles.subtitle}>
+            Sign in to save and access your favorite recipes anytime.
+          </Text>
+          <TouchableOpacity
+            style={unauthStyles.signInButton}
+            onPress={() => requireAuth()}
+            activeOpacity={0.8}
+          >
+            <Ionicons name="log-in-outline" size={20} color={COLORS.white} />
+            <Text style={unauthStyles.signInButtonText}>Sign In</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    );
+  }
+
   return (
     <View style={{ ...favoritesStyles.container, paddingTop: top }}>
       <StatusBar hidden={false} />
@@ -260,5 +292,52 @@ const FavoritesScreen = (): React.ReactElement => {
     </View>
   );
 };
+
+const unauthStyles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    paddingHorizontal: 32,
+    paddingBottom: 80,
+  },
+  iconContainer: {
+    width: 88,
+    height: 88,
+    borderRadius: 44,
+    backgroundColor: COLORS.primary + "15",
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: 20,
+  },
+  title: {
+    fontSize: 22,
+    fontWeight: "700",
+    color: COLORS.text,
+    marginBottom: 8,
+  },
+  subtitle: {
+    fontSize: 15,
+    color: COLORS.textLight,
+    textAlign: "center",
+    lineHeight: 22,
+    marginBottom: 24,
+  },
+  signInButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 8,
+    backgroundColor: COLORS.primary,
+    paddingHorizontal: 32,
+    paddingVertical: 14,
+    borderRadius: 14,
+  },
+  signInButtonText: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: COLORS.white,
+  },
+});
 
 export default FavoritesScreen;

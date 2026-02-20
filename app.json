@@ -17,8 +17,8 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/recipe-finder-icon.png",
-        "backgroundColor": "#ffffff"
+        "foregroundImage": "./assets/images/android-recipe-finder-icon.png",
+        "backgroundColor": "#242424"
       },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,

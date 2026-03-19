@@ -62,7 +62,8 @@
             "targetSdkVersion": 35,
             "minSdkVersion": 24,
             "enableProguardInReleaseBuilds": true,
-            "enableShrinkResourcesInReleaseBuilds": true
+            "enableShrinkResourcesInReleaseBuilds": true,
+            "enableMinifyInReleaseBuilds": true
           }
         }
       ]
@@ -76,6 +77,7 @@
       "eas": {
         "projectId": "cbe6e7db-7f7d-499f-b6bf-75a40075fb9c"
       }
-    }
+    },
+    "owner": "mateolorenzo"
   }
 }

@@ -4,23 +4,14 @@
     "appVersionSource": "remote"
   },
   "build": {
-    "base": {
-      "node": "20.20.1",
-      "install": {
-        "command": "npm install --ignore-scripts=false"
-      }
-    },
     "development": {
-      "extends": "base",
       "developmentClient": true,
       "distribution": "internal"
     },
     "preview": {
-      "extends": "base",
       "distribution": "internal"
     },
     "production": {
-      "extends": "base",
       "autoIncrement": true
     }
   },

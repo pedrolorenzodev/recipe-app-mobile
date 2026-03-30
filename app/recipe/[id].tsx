@@ -186,11 +186,7 @@ const RecipeDetailScreen = (): React.ReactElement => {
             >
               <Ionicons
                 name={
-                  isSaving
-                    ? "hourglass"
-                    : isSaved
-                      ? "heart"
-                      : "heart-outline"
+                  isSaving ? "hourglass" : isSaved ? "heart" : "heart-outline"
                 }
                 size={24}
                 color={COLORS.white}

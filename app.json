@@ -9,6 +9,7 @@
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
+      "appleTeamId": "3HTMU24JB6",
       "supportsTablet": false,
       "bundleIdentifier": "com.pedrolorenzo.recipefinder",
       "infoPlist": {
@@ -36,6 +37,15 @@
     },
     "plugins": [
       "expo-router",
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/images/android-recipe-finder-icon.png",
+          "color": "#242424",
+          "defaultChannel": "default",
+          "enableBackgroundRemoteNotifications": false
+        }
+      ],
       [
         "expo-splash-screen",
         {
@@ -67,7 +77,8 @@
             "enableMinifyInReleaseBuilds": true
           }
         }
-      ]
+      ],
+      "@bacons/apple-targets"
     ],
     "experiments": {
       "typedRoutes": true,

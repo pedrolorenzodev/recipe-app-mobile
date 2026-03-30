@@ -1,11 +1,22 @@
+import { AuthGateProvider } from "@/contexts/AuthGateContext";
+import { NotificationProvider } from "@/contexts/NotificationContext";
 import { ClerkProvider, useAuth } from "@clerk/clerk-expo";
 import { tokenCache } from "@clerk/clerk-expo/token-cache";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
+import * as Notifications from "expo-notifications";
 import { Stack } from "expo-router";
 import React from "react";
 import { ActivityIndicator, View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import { AuthGateProvider } from "../contexts/AuthGateContext";
+
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowBanner: true,
+    shouldShowList: true,
+    shouldSetBadge: true,
+    shouldPlaySound: false,
+  }),
+});
 
 const publishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY!;
 
@@ -32,14 +43,14 @@ function RootLayoutNav(): React.ReactElement | null {
             name="(auth)"
             options={{
               animation: "none",
-              presentation: "card"
+              presentation: "card",
             }}
           />
           <Stack.Screen
             name="(tabs)"
             options={{
               animation: "none",
-              presentation: "card"
+              presentation: "card",
             }}
           />
           <Stack.Screen name="recipe/[id]" />
@@ -53,7 +64,9 @@ export default function RootLayout(): React.ReactElement {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <ClerkProvider tokenCache={tokenCache} publishableKey={publishableKey}>
-        <RootLayoutNav />
+        <NotificationProvider>
+          <RootLayoutNav />
+        </NotificationProvider>
       </ClerkProvider>
     </GestureHandlerRootView>
   );

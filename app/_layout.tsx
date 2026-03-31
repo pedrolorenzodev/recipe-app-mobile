@@ -1,5 +1,5 @@
 import { AuthGateProvider } from "@/contexts/AuthGateContext";
-import { NotificationProvider } from "@/contexts/NotificationContext";
+import { useNotificationObserver } from "@/hooks/useNotificationObserver";
 import { ClerkProvider, useAuth } from "@clerk/clerk-expo";
 import { tokenCache } from "@clerk/clerk-expo/token-cache";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
@@ -26,6 +26,7 @@ if (!publishableKey) {
 
 function RootLayoutNav(): React.ReactElement | null {
   const { isLoaded } = useAuth();
+  useNotificationObserver(isLoaded);
 
   if (!isLoaded) {
     return (
@@ -64,9 +65,7 @@ export default function RootLayout(): React.ReactElement {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <ClerkProvider tokenCache={tokenCache} publishableKey={publishableKey}>
-        <NotificationProvider>
-          <RootLayoutNav />
-        </NotificationProvider>
+        <RootLayoutNav />
       </ClerkProvider>
     </GestureHandlerRootView>
   );

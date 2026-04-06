@@ -24,7 +24,7 @@ const SearchScreen = (): React.ReactElement => {
   const [loading, setLoading] = useState<boolean>(false);
   const [initialLoading, setInitialLoading] = useState<boolean>(true);
 
-  const debouncedSearchQuery = useDebounce(searchQuery, 300);
+  const debouncedSearchQuery = useDebounce(searchQuery, 800);
 
   const performSearch = async (query: string): Promise<Recipe[]> => {
     // if no search query
@@ -82,7 +82,7 @@ const SearchScreen = (): React.ReactElement => {
       }
     };
     handleSearch();
-  }, [debouncedSearchQuery, initialLoading]);
+  }, [debouncedSearchQuery]);
 
   return (
     <View style={{ ...searchStyles.container, paddingTop: top }}>
@@ -121,10 +121,18 @@ const SearchScreen = (): React.ReactElement => {
 
       <View style={searchStyles.resultsSection}>
         <View style={searchStyles.resultsHeader}>
-          <Text style={searchStyles.resultsTitle}>
+          <Text
+            style={searchStyles.resultsTitle}
+            ellipsizeMode="tail"
+            numberOfLines={1}
+          >
             {searchQuery ? `Results for "${searchQuery}"` : "Popular Recipes"}
           </Text>
-          <Text style={searchStyles.resultsCount}>{recipes.length} found</Text>
+          <View style={searchStyles.resultsCountContainer}>
+            <Text style={searchStyles.resultsCount}>
+              {recipes.length} found
+            </Text>
+          </View>
         </View>
 
         {initialLoading || loading ? (

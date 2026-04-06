@@ -2,18 +2,27 @@ import { useAuth, useClerk, useUser } from "@clerk/clerk-expo";
 import { Ionicons } from "@expo/vector-icons";
 import { useFocusEffect } from "expo-router";
 import * as WebBrowser from "expo-web-browser";
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
-  Alert,
-  FlatList,
-  RefreshControl,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
+    Alert,
+    FlatList,
+    Pressable,
+    RefreshControl,
+    ScrollView,
+    StatusBar,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View,
 } from "react-native";
+import Animated, {
+    FadeIn,
+    FadeOut,
+    LinearTransition,
+    useAnimatedStyle,
+    useSharedValue,
+    withTiming,
+} from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { favoritesStyles } from "../../assets/styles/favorites.styles";
 import NoFavoritesFound from "../../components/NoFavoritesFound";
@@ -38,6 +47,16 @@ const FavoritesScreen = (): React.ReactElement => {
   const [favoriteRecipes, setFavoriteRecipes] = useState<FavoriteRecipe[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [refreshing, setRefreshing] = useState<boolean>(false);
+  const [isExpanded, setIsExpanded] = useState<boolean>(false);
+  const chevronRotation = useSharedValue(isExpanded ? 1 : 0);
+
+  useEffect(() => {
+    chevronRotation.value = withTiming(isExpanded ? 1 : 0, { duration: 200 });
+  }, [chevronRotation, isExpanded]);
+
+  const chevronStyle = useAnimatedStyle(() => ({
+    transform: [{ rotate: `${chevronRotation.value * 180}deg` }],
+  }));
 
   const loadFavorites = useCallback(async (): Promise<void> => {
     try {
@@ -209,70 +228,102 @@ const FavoritesScreen = (): React.ReactElement => {
         </View>
 
         {/* Account Section */}
-        <View style={favoritesStyles.accountSection}>
-          <Text style={favoritesStyles.accountSectionTitle}>Account</Text>
-
-          {/* Privacy Policy */}
-          <TouchableOpacity
-            style={favoritesStyles.accountLink}
-            onPress={() => handleOpenLink(PRIVACY_POLICY_URL)}
-            activeOpacity={0.7}
-          >
-            <Text style={favoritesStyles.accountLinkText}>Privacy Policy</Text>
-            <Ionicons
-              name="chevron-forward"
-              size={20}
-              color={COLORS.textLight}
-            />
-          </TouchableOpacity>
-
-          {/* Terms of Service */}
-          <TouchableOpacity
-            style={favoritesStyles.accountLink}
-            onPress={() => handleOpenLink(TERMS_OF_SERVICE_URL)}
-            activeOpacity={0.7}
-          >
-            <Text style={favoritesStyles.accountLinkText}>
-              Terms of Service
-            </Text>
-            <Ionicons
-              name="chevron-forward"
-              size={20}
-              color={COLORS.textLight}
-            />
-          </TouchableOpacity>
-
-          {/* Sign Out */}
-          <TouchableOpacity
-            style={favoritesStyles.accountLink}
-            onPress={handleSignOut}
-            activeOpacity={0.7}
-          >
-            <Text style={favoritesStyles.accountLinkText}>Sign Out</Text>
-            <Ionicons
-              name="log-out-outline"
-              size={20}
-              color={COLORS.textLight}
-            />
-          </TouchableOpacity>
-
-          {/* Delete Account */}
-          <TouchableOpacity
-            style={[
-              favoritesStyles.accountLink,
-              favoritesStyles.accountLinkLast,
+        <Animated.View
+          style={favoritesStyles.accountSection}
+          layout={LinearTransition.duration(200)}
+        >
+          <Pressable
+            style={({ pressed }) => [
+              favoritesStyles.accountSectionPress,
+              pressed && { backgroundColor: "rgba(0, 0, 0, 0.02)" },
             ]}
-            onPress={handleDeleteAccount}
-            activeOpacity={0.7}
+            onPress={() => setIsExpanded(!isExpanded)}
           >
-            <Text style={favoritesStyles.deleteAccountText}>
-              Delete Account
-            </Text>
-            <Ionicons name="trash-outline" size={20} color={COLORS.error} />
-          </TouchableOpacity>
-        </View>
+            <View style={favoritesStyles.accountSectionHeader}>
+              <Text style={favoritesStyles.accountSectionTitle}>Account</Text>
+              <Animated.View style={chevronStyle}>
+                <Ionicons
+                  name="chevron-down"
+                  size={20}
+                  color={COLORS.primary}
+                />
+              </Animated.View>
+            </View>
 
-        <View style={favoritesStyles.recipesSection}>
+            {isExpanded && (
+              <Animated.View
+                entering={FadeIn.duration(250)}
+                exiting={FadeOut.duration(150)}
+              >
+                <TouchableOpacity
+                  style={favoritesStyles.accountLink}
+                  onPress={() => handleOpenLink(PRIVACY_POLICY_URL)}
+                  activeOpacity={0.7}
+                >
+                  <Text style={favoritesStyles.accountLinkText}>
+                    Privacy Policy
+                  </Text>
+                  <Ionicons
+                    name="chevron-forward"
+                    size={20}
+                    color={COLORS.textLight}
+                  />
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={favoritesStyles.accountLink}
+                  onPress={() => handleOpenLink(TERMS_OF_SERVICE_URL)}
+                  activeOpacity={0.7}
+                >
+                  <Text style={favoritesStyles.accountLinkText}>
+                    Terms of Service
+                  </Text>
+                  <Ionicons
+                    name="chevron-forward"
+                    size={20}
+                    color={COLORS.textLight}
+                  />
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={favoritesStyles.accountLink}
+                  onPress={handleSignOut}
+                  activeOpacity={0.7}
+                >
+                  <Text style={favoritesStyles.accountLinkText}>Sign Out</Text>
+                  <Ionicons
+                    name="log-out-outline"
+                    size={20}
+                    color={COLORS.textLight}
+                  />
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={[
+                    favoritesStyles.accountLink,
+                    favoritesStyles.accountLinkLast,
+                  ]}
+                  onPress={handleDeleteAccount}
+                  activeOpacity={0.7}
+                >
+                  <Text style={favoritesStyles.deleteAccountText}>
+                    Delete Account
+                  </Text>
+                  <Ionicons
+                    name="trash-outline"
+                    size={20}
+                    color={COLORS.error}
+                  />
+                </TouchableOpacity>
+              </Animated.View>
+            )}
+          </Pressable>
+        </Animated.View>
+
+        <Animated.View
+          layout={LinearTransition.duration(200)}
+          style={favoritesStyles.recipesSection}
+        >
           {loading || refreshing ? (
             <RecipeGridSkeleton count={6} showDescription={false} />
           ) : (
@@ -287,7 +338,7 @@ const FavoritesScreen = (): React.ReactElement => {
               ListEmptyComponent={<NoFavoritesFound />}
             />
           )}
-        </View>
+        </Animated.View>
       </ScrollView>
     </View>
   );

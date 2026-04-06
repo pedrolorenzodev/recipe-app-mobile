@@ -26,9 +26,6 @@ export const useNotificationObserver = (isLoaded: boolean) => {
         if (!response.ok) {
           throw new Error(`Response status: ${response.status}`);
         }
-
-        const result = await response.json();
-        console.log("result", result);
       } catch (error) {
         console.error(error);
       }
@@ -50,7 +47,6 @@ export const useNotificationObserver = (isLoaded: boolean) => {
     const redirect = (notification: Notifications.Notification) => {
       const url = notification.request.content.data?.mealId;
       if (typeof url === "string") {
-        console.log("URL:", url);
         push({ pathname: "/recipe/[id]", params: { id: url } });
       }
     };

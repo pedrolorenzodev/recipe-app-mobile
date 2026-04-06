@@ -132,18 +132,26 @@ export const favoritesStyles = StyleSheet.create({
     marginTop: 16,
     backgroundColor: COLORS.card,
     borderRadius: 16,
-    padding: 16,
     shadowColor: COLORS.shadow,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 2,
   },
+  accountSectionPress: {
+    paddingHorizontal: 16,
+    borderRadius: 16,
+  },
+  accountSectionHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
   accountSectionTitle: {
     fontSize: 16,
     fontWeight: "700",
     color: COLORS.text,
-    marginBottom: 12,
+    marginVertical: 16,
   },
   accountLink: {
     flexDirection: "row",

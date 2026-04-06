@@ -80,7 +80,7 @@ export const searchStyles = StyleSheet.create({
   resultsHeader: {
     flexDirection: "row",
     justifyContent: "space-between",
-    alignItems: "center",
+    gap: 20,
     marginBottom: 16,
     marginTop: 16,
   },
@@ -90,8 +90,13 @@ export const searchStyles = StyleSheet.create({
     color: COLORS.text,
     flex: 1,
   },
+  resultsCountContainer: {
+    height: 25,
+    alignSelf: "flex-start",
+    justifyContent: "center",
+  },
   resultsCount: {
-    fontSize: 14,
+    fontSize: 15,
     color: COLORS.textLight,
     fontWeight: "500",
   },

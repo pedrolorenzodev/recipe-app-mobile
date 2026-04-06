@@ -1,5 +1,5 @@
 import React from "react";
-import { View, FlatList } from "react-native";
+import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
 import { homeStyles } from "../assets/styles/home.styles";
 import RecipeCardSkeleton from "./RecipeCardSkeleton";
 
@@ -15,9 +15,13 @@ export default function RecipeGridSkeleton({
   const skeletonData = Array.from({ length: count }, (_, i) => i);
 
   return (
-    <FlatList
+    <Animated.FlatList
+      entering={FadeIn.duration(250)}
+      exiting={FadeOut.duration(150)}
       data={skeletonData}
-      renderItem={() => <RecipeCardSkeleton showDescription={showDescription} />}
+      renderItem={() => (
+        <RecipeCardSkeleton showDescription={showDescription} />
+      )}
       keyExtractor={(item) => `skeleton-${item}`}
       numColumns={2}
       columnWrapperStyle={homeStyles.row}

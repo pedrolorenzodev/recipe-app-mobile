@@ -1,19 +1,28 @@
 import { useUser } from "@clerk/clerk-expo";
 import { Ionicons } from "@expo/vector-icons";
+import * as Clipboard from "expo-clipboard";
 import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
-  ActivityIndicator,
-  Alert,
-  Linking,
-  ScrollView,
-  StatusBar,
-  Text,
-  TouchableOpacity,
-  View,
+    ActivityIndicator,
+    Alert,
+    Linking,
+    Pressable,
+    ScrollView,
+    StatusBar,
+    Text,
+    TouchableOpacity,
+    View,
 } from "react-native";
+import Animated, {
+    FadeIn,
+    FadeOut,
+    useAnimatedStyle,
+    useSharedValue,
+    withSpring,
+} from "react-native-reanimated";
 import { recipeDetailStyles } from "../../assets/styles/recipe-detail.styles";
 import LoadingSpinner from "../../components/LoadingSpinner";
 import { API_URL } from "../../constants/api";
@@ -35,10 +44,33 @@ const RecipeDetailScreen = (): React.ReactElement => {
   const [loading, setLoading] = useState<boolean>(true);
   const [isSaved, setIsSaved] = useState<boolean>(false);
   const [isSaving, setIsSaving] = useState<boolean>(false);
+  const [clipboardCopied, setClipboardCopied] = useState<boolean>(false);
 
   const { user } = useUser();
   const userId = user?.id;
   const { requireAuth } = useAuthGate();
+  const initialCheck = useRef(false);
+
+  const heartFilling = useSharedValue(isSaved ? 1 : 0);
+
+  useEffect(() => {
+    if (!initialCheck.current) return;
+
+    heartFilling.value = withSpring(isSaved ? 1 : 0, {
+      damping: 8,
+      stiffness: 150,
+      mass: 0.5,
+    });
+  }, [heartFilling, isSaved, initialCheck]);
+
+  const heartStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: heartFilling.value }],
+    opacity: heartFilling.value,
+  }));
+  const heartOutlineStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: 1 - heartFilling.value }],
+    opacity: 1 - heartFilling.value,
+  }));
 
   useEffect(() => {
     const checkIfSaved = async (): Promise<void> => {
@@ -50,6 +82,8 @@ const RecipeDetailScreen = (): React.ReactElement => {
           (fav: any) => fav.recipeId === parseInt(recipeId),
         );
         setIsSaved(isRecipeSaved);
+        heartFilling.value = isRecipeSaved ? 1 : 0;
+        initialCheck.current = true;
       } catch (error) {
         console.error("Error checking if recipe is saved", error);
       }
@@ -106,6 +140,7 @@ const RecipeDetailScreen = (): React.ReactElement => {
     try {
       if (isSaved) {
         // remove from favorites
+        setIsSaved(false);
         const response = await fetch(
           `${API_URL}/favorites/${userId}/${recipeId}`,
           {
@@ -114,9 +149,10 @@ const RecipeDetailScreen = (): React.ReactElement => {
         );
         if (!response.ok) throw new Error("Failed to remove recipe");
 
-        setIsSaved(false);
+        // setIsSaved(false);
       } else {
         // add to favorites
+        setIsSaved(true);
         const response = await fetch(`${API_URL}/favorites`, {
           method: "POST",
           headers: {
@@ -132,7 +168,7 @@ const RecipeDetailScreen = (): React.ReactElement => {
           }),
         });
         if (!response.ok) throw new Error("Failed to save recipe");
-        setIsSaved(true);
+        // setIsSaved(true);
       }
     } catch (error) {
       console.error("Error toggling recipe save:", error);
@@ -141,6 +177,25 @@ const RecipeDetailScreen = (): React.ReactElement => {
       setIsSaving(false);
     }
   };
+
+  const copyToClipboard = async (text: string) => {
+    await Clipboard.setStringAsync(text);
+    setClipboardCopied(true);
+
+    setTimeout(() => {
+      setClipboardCopied(false);
+    }, 2500);
+  };
+
+  const copiedToClipboardBadge = () => (
+    <Animated.View
+      style={recipeDetailStyles.textCopiedBadge}
+      entering={FadeIn.duration(250)}
+      exiting={FadeOut.duration(150)}
+    >
+      <Text style={recipeDetailStyles.textCopied}>Copied to clipboard!</Text>
+    </Animated.View>
+  );
 
   if (loading) return <LoadingSpinner message="Loading recipe details..." />;
   if (!recipe) return <LoadingSpinner message="Recipe not found..." />;
@@ -172,26 +227,49 @@ const RecipeDetailScreen = (): React.ReactElement => {
               <Ionicons name="arrow-back" size={24} color={COLORS.white} />
             </TouchableOpacity>
 
-            <TouchableOpacity
+            <Pressable
               style={[
                 recipeDetailStyles.floatingButton,
-                {
-                  backgroundColor: isSaving
-                    ? COLORS.primary + "80"
-                    : COLORS.primary,
-                },
+                isSaved
+                  ? recipeDetailStyles.recipeSavedShadow
+                  : recipeDetailStyles.saveRecipeShadow,
               ]}
               onPress={handleToggleSave}
               disabled={isSaving}
             >
-              <Ionicons
-                name={
-                  isSaving ? "hourglass" : isSaved ? "heart" : "heart-outline"
-                }
-                size={24}
-                color={COLORS.white}
-              />
-            </TouchableOpacity>
+              <Animated.View
+                style={[heartStyle, recipeDetailStyles.floatingSaveButton]}
+              >
+                <Ionicons
+                  name="heart"
+                  size={24}
+                  style={{ position: "absolute" }}
+                  color={COLORS.red}
+                />
+              </Animated.View>
+              <Animated.View
+                style={[
+                  heartOutlineStyle,
+                  recipeDetailStyles.floatingSaveButton,
+                ]}
+              >
+                <Ionicons
+                  name="heart-outline"
+                  size={24}
+                  style={{ position: "absolute" }}
+                  color={COLORS.white}
+                />
+              </Animated.View>
+              {/* {heartIcons.map((icon, index) => (
+                  <Ionicons
+                    name={icon as "heart" | "heart-outline"}
+                    size={24}
+                    style={{ position: "absolute" }}
+                    color={COLORS.white}
+                    key={index}
+                  />
+                  ))} */}
+            </Pressable>
           </View>
 
           {/* Title Section */}
@@ -201,7 +279,18 @@ const RecipeDetailScreen = (): React.ReactElement => {
                 {recipe.category}
               </Text>
             </View>
-            <Text style={recipeDetailStyles.recipeTitle}>{recipe.title}</Text>
+
+            <Pressable
+              style={({ pressed }) => [
+                recipeDetailStyles.recipeTitleContainer,
+                pressed && recipeDetailStyles.recipeTitlePressed,
+              ]}
+              onLongPress={() => copyToClipboard(recipe.title)}
+            >
+              {clipboardCopied && copiedToClipboardBadge()}
+              <Text style={recipeDetailStyles.recipeTitle}>{recipe.title}</Text>
+            </Pressable>
+
             {recipe.area && (
               <View style={recipeDetailStyles.locationRow}>
                 <Ionicons name="location" size={16} color={COLORS.white} />

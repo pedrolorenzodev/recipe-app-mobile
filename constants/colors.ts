@@ -7,6 +7,7 @@ const coffeeTheme = {
   textLight: "#9A8478",
   card: "#FFFFFF",
   shadow: "#000000",
+  red: "#ED4956",
   error: "#DC2626",
 };
 

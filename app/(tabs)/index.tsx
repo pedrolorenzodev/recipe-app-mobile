@@ -2,23 +2,23 @@ import { Ionicons } from "@expo/vector-icons";
 import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
 import { useNavigation, useRouter } from "expo-router";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
-  ActivityIndicator,
-  FlatList,
-  RefreshControl,
-  ScrollView,
-  StatusBar,
-  Text,
-  TouchableOpacity,
-  View,
+    ActivityIndicator,
+    FlatList,
+    RefreshControl,
+    ScrollView,
+    StatusBar,
+    Text,
+    TouchableOpacity,
+    View,
 } from "react-native";
 import Carousel from "react-native-reanimated-carousel";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import {
-  CAROUSEL_HEIGHT,
-  CAROUSEL_WIDTH,
-  homeStyles,
+    CAROUSEL_HEIGHT,
+    CAROUSEL_WIDTH,
+    homeStyles,
 } from "../../assets/styles/home.styles";
 import CategoryFilter from "../../components/CategoryFilter";
 import LoadingSpinner from "../../components/LoadingSpinner";
@@ -205,22 +205,24 @@ const HomeScreen = (): React.ReactElement => {
     }
   };
 
-  const handleCategorySelect = async (category: string): Promise<void> => {
-    // Toggle: if clicking the same category, deselect it
-    if (selectedCategory === category) {
-      setSelectedCategory(null);
-      setCategoryLoading(true);
-      await loadRandomMeals();
-      setCategoryLoading(false);
-      return;
-    }
+  const handleCategorySelect = useCallback(
+    async (category: string): Promise<void> => {
+      if (selectedCategory === category) {
+        setSelectedCategory(null);
+        setCategoryLoading(true);
+        await loadRandomMeals();
+        setCategoryLoading(false);
+        return;
+      }
 
-    // Select new category
-    setSelectedCategory(category);
-    setCategoryLoading(true);
-    await loadCategoryData(category);
-    setCategoryLoading(false);
-  };
+      setSelectedCategory(category);
+      setCategoryLoading(true);
+      await loadCategoryData(category);
+      setCategoryLoading(false);
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- loaders omitted so this stays stable across renders
+    [selectedCategory],
+  );
 
   const handleRefresh = async (): Promise<void> => {
     setRefreshing(true);
@@ -284,11 +286,11 @@ const HomeScreen = (): React.ReactElement => {
               width={CAROUSEL_WIDTH}
               height={CAROUSEL_HEIGHT}
               data={featuredRecipes}
-              scrollAnimationDuration={500}
+              scrollAnimationDuration={600}
               mode="parallax"
               modeConfig={{
-                parallaxScrollingScale: 0.92,
-                parallaxScrollingOffset: 60,
+                parallaxScrollingScale: 0.94,
+                parallaxAdjacentItemScale: Math.pow(0.94, 7),
               }}
               renderItem={({ item: featuredRecipe }) => (
                 <TouchableOpacity

@@ -329,7 +329,9 @@ const FavoritesScreen = (): React.ReactElement => {
           ) : (
             <FlatList
               data={favoriteRecipes}
-              renderItem={({ item }) => <RecipeCard recipe={item} />}
+              renderItem={({ item }) => (
+                <RecipeCard recipe={item} showDescription={false} />
+              )}
               keyExtractor={(item) => (item.id || item.recipeId).toString()}
               numColumns={2}
               columnWrapperStyle={favoritesStyles.row}

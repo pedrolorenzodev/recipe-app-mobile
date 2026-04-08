@@ -64,6 +64,7 @@ export interface FavoriteRecipe {
 
 export interface RecipeCardProps {
   recipe: Recipe | FavoriteRecipe;
+  showDescription?: boolean;
 }
 
 export interface CategoryFilterProps {

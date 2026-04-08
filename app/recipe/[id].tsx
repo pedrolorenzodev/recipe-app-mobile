@@ -53,6 +53,17 @@ const RecipeDetailScreen = (): React.ReactElement => {
 
   const heartFilling = useSharedValue(isSaved ? 1 : 0);
 
+  const filteredInstructions = recipe?.instructions.filter((instruction) => {
+    const normalizedInstruction = instruction.trim();
+
+    // Remove empty values and "step X" indicator rows from the API payload.
+    return (
+      normalizedInstruction.length > 0 &&
+      !/^step\s*\d+[\s:.-]*$/i.test(normalizedInstruction) &&
+      !/^\d+$/.test(normalizedInstruction)
+    );
+  });
+
   useEffect(() => {
     if (!initialCheck.current) return;
 
@@ -203,7 +214,7 @@ const RecipeDetailScreen = (): React.ReactElement => {
   return (
     <View style={{ ...recipeDetailStyles.container }}>
       <StatusBar hidden={true} />
-      <ScrollView>
+      <ScrollView bounces={false}>
         {/* HEADER */}
         <View style={recipeDetailStyles.headerContainer}>
           <View style={recipeDetailStyles.imageContainer}>
@@ -220,12 +231,15 @@ const RecipeDetailScreen = (): React.ReactElement => {
           />
 
           <View style={recipeDetailStyles.floatingButtons}>
-            <TouchableOpacity
-              style={recipeDetailStyles.floatingButton}
+            <Pressable
+              style={({ pressed }) => [
+                recipeDetailStyles.floatingButton,
+                pressed && { opacity: 0.8 },
+              ]}
               onPress={() => router.back()}
             >
               <Ionicons name="arrow-back" size={24} color={COLORS.white} />
-            </TouchableOpacity>
+            </Pressable>
 
             <Pressable
               style={[
@@ -235,7 +249,6 @@ const RecipeDetailScreen = (): React.ReactElement => {
                   : recipeDetailStyles.saveRecipeShadow,
               ]}
               onPress={handleToggleSave}
-              disabled={isSaving}
             >
               <Animated.View
                 style={[heartStyle, recipeDetailStyles.floatingSaveButton]}
@@ -260,15 +273,6 @@ const RecipeDetailScreen = (): React.ReactElement => {
                   color={COLORS.white}
                 />
               </Animated.View>
-              {/* {heartIcons.map((icon, index) => (
-                  <Ionicons
-                    name={icon as "heart" | "heart-outline"}
-                    size={24}
-                    style={{ position: "absolute" }}
-                    color={COLORS.white}
-                    key={index}
-                  />
-                  ))} */}
             </Pressable>
           </View>
 
@@ -306,12 +310,9 @@ const RecipeDetailScreen = (): React.ReactElement => {
           {/* QUICK STATS */}
           <View style={recipeDetailStyles.statsContainer}>
             <View style={recipeDetailStyles.statCard}>
-              <LinearGradient
-                colors={["#FF6B6B", "#FF8E53"]}
-                style={recipeDetailStyles.statIconContainer}
-              >
-                <Ionicons name="time" size={20} color={COLORS.white} />
-              </LinearGradient>
+              <View style={recipeDetailStyles.statIconContainer}>
+                <Ionicons name="time" size={20} color={COLORS.primary} />
+              </View>
               <Text style={recipeDetailStyles.statValue}>
                 {recipe.cookTime}
               </Text>
@@ -319,12 +320,9 @@ const RecipeDetailScreen = (): React.ReactElement => {
             </View>
 
             <View style={recipeDetailStyles.statCard}>
-              <LinearGradient
-                colors={["#4ECDC4", "#44A08D"]}
-                style={recipeDetailStyles.statIconContainer}
-              >
-                <Ionicons name="people" size={20} color={COLORS.white} />
-              </LinearGradient>
+              <View style={recipeDetailStyles.statIconContainer}>
+                <Ionicons name="people" size={20} color={COLORS.primary} />
+              </View>
               <Text style={recipeDetailStyles.statValue}>
                 {recipe.servings}
               </Text>
@@ -335,12 +333,9 @@ const RecipeDetailScreen = (): React.ReactElement => {
           {recipe.youtubeUrl && (
             <View style={recipeDetailStyles.sectionContainer}>
               <View style={recipeDetailStyles.sectionTitleRow}>
-                <LinearGradient
-                  colors={["#FF0000", "#CC0000"]}
-                  style={recipeDetailStyles.sectionIcon}
-                >
-                  <Ionicons name="play" size={16} color={COLORS.white} />
-                </LinearGradient>
+                <View style={recipeDetailStyles.sectionIcon}>
+                  <Ionicons name="play" size={16} color={COLORS.primary} />
+                </View>
 
                 <Text style={recipeDetailStyles.sectionTitle}>
                   Video Tutorial
@@ -385,12 +380,9 @@ const RecipeDetailScreen = (): React.ReactElement => {
           {/* INGREDIENTS SECTION */}
           <View style={recipeDetailStyles.sectionContainer}>
             <View style={recipeDetailStyles.sectionTitleRow}>
-              <LinearGradient
-                colors={[COLORS.primary, COLORS.primary + "80"]}
-                style={recipeDetailStyles.sectionIcon}
-              >
-                <Ionicons name="list" size={16} color={COLORS.white} />
-              </LinearGradient>
+              <View style={recipeDetailStyles.sectionIcon}>
+                <Ionicons name="list" size={16} color={COLORS.primary} />
+              </View>
               <Text style={recipeDetailStyles.sectionTitle}>Ingredients</Text>
               <View style={recipeDetailStyles.countBadge}>
                 <Text style={recipeDetailStyles.countText}>
@@ -425,35 +417,29 @@ const RecipeDetailScreen = (): React.ReactElement => {
           {/* INSTRUCTIONS SECTION */}
           <View style={recipeDetailStyles.sectionContainer}>
             <View style={recipeDetailStyles.sectionTitleRow}>
-              <LinearGradient
-                colors={[COLORS.primary, COLORS.primary + "80"]}
-                style={recipeDetailStyles.sectionIcon}
-              >
-                <Ionicons name="book" size={16} color={COLORS.white} />
-              </LinearGradient>
+              <View style={recipeDetailStyles.sectionIcon}>
+                <Ionicons name="book" size={16} color={COLORS.primary} />
+              </View>
               <Text style={recipeDetailStyles.sectionTitle}>Instructions</Text>
               <View style={recipeDetailStyles.countBadge}>
                 <Text style={recipeDetailStyles.countText}>
-                  {recipe.instructions.length}
+                  {filteredInstructions?.length ?? 0}
                 </Text>
               </View>
             </View>
 
             <View style={recipeDetailStyles.instructionsContainer}>
-              {recipe.instructions.map((instruction, index) => (
+              {filteredInstructions?.map((instruction, index) => (
                 <View style={recipeDetailStyles.instructionCard} key={index}>
-                  <LinearGradient
-                    colors={[COLORS.primary, COLORS.primary + "CC"]}
-                    style={recipeDetailStyles.stepIndicator}
-                  >
+                  <View style={recipeDetailStyles.stepIndicator}>
                     <Text style={recipeDetailStyles.stepNumber}>
                       {index + 1}
                     </Text>
-                  </LinearGradient>
+                  </View>
 
                   <View style={recipeDetailStyles.instructionContent}>
                     <Text style={recipeDetailStyles.instructionText}>
-                      {instruction}
+                      {instruction} {/* FIXME: */}
                     </Text>
                     <View style={recipeDetailStyles.instructionFooter}>
                       <Text style={recipeDetailStyles.stepLabel}>

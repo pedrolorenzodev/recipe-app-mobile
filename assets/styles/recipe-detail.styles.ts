@@ -44,7 +44,6 @@ export const recipeDetailStyles = StyleSheet.create({
     shadowOpacity: 0.6,
     shadowRadius: 10,
     elevation: 14,
-    backdropFilter: "blur(10px)",
   },
   saveRecipeShadow: { shadowColor: "#FFFFFF" },
   recipeSavedShadow: { shadowColor: COLORS.red },
@@ -145,7 +144,8 @@ export const recipeDetailStyles = StyleSheet.create({
   statIconContainer: {
     width: 40,
     height: 40,
-    borderRadius: 20,
+    borderRadius: 12,
+    backgroundColor: COLORS.primary + "15",
     justifyContent: "center",
     alignItems: "center",
     marginBottom: 12,
@@ -175,7 +175,8 @@ export const recipeDetailStyles = StyleSheet.create({
   sectionIcon: {
     width: 32,
     height: 32,
-    borderRadius: 16,
+    borderRadius: 10,
+    backgroundColor: COLORS.primary + "15",
     justifyContent: "center",
     alignItems: "center",
   },
@@ -263,12 +264,13 @@ export const recipeDetailStyles = StyleSheet.create({
   stepIndicator: {
     width: 40,
     height: 40,
-    borderRadius: 20,
+    borderRadius: 12,
+    backgroundColor: COLORS.primary + "15",
     justifyContent: "center",
     alignItems: "center",
   },
   stepNumber: {
-    color: COLORS.white,
+    color: COLORS.primary,
     fontSize: 16,
     fontWeight: "bold",
   },

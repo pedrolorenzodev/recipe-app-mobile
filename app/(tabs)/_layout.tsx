@@ -2,6 +2,7 @@ import { useAuth } from "@clerk/clerk-expo";
 import { Ionicons } from "@expo/vector-icons";
 import { Tabs } from "expo-router";
 import React from "react";
+import { Pressable } from "react-native";
 import { COLORS } from "../../constants/colors";
 import { useAuthGate } from "../../contexts/AuthGateContext";
 
@@ -15,10 +16,25 @@ const TabsLayout = (): React.ReactElement => {
         headerShown: false,
         tabBarActiveTintColor: COLORS.primary,
         tabBarInactiveTintColor: COLORS.textLight,
+        tabBarButton: (props: any) => (
+          <Pressable
+            {...props}
+            style={[
+              props.style,
+              {
+                justifyContent: "center",
+                alignItems: "center",
+              },
+            ]}
+          >
+            {props.children}
+          </Pressable>
+        ),
         tabBarStyle: {
-          backgroundColor: COLORS.white,
-          borderTopColor: COLORS.border,
-          borderTopWidth: 1,
+          backgroundColor: "rgba(22, 22, 22, 0.92)",
+          borderTopColor: "transparent",
+          borderTopWidth: 0,
+          position: "absolute",
           paddingBottom: 8,
           paddingTop: 8,
           height: 80,

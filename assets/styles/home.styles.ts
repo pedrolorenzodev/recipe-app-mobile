@@ -1,4 +1,4 @@
-import { Dimensions, StyleSheet } from "react-native";
+import { Dimensions, Platform, StyleSheet } from "react-native";
 import { COLORS } from "../../constants/colors";
 
 const { width } = Dimensions.get("window");
@@ -14,7 +14,7 @@ export const homeStyles = StyleSheet.create({
     backgroundColor: COLORS.background,
   },
   scrollContent: {
-    paddingBottom: 32,
+    paddingBottom: 100,
   },
   featuredSection: {
     paddingTop: 20,
@@ -22,7 +22,7 @@ export const homeStyles = StyleSheet.create({
   featuredCard: {
     width: width - 40,
     marginHorizontal: 20,
-    borderRadius: 24,
+    borderRadius: 22,
     overflow: "hidden",
     backgroundColor: COLORS.card,
     shadowColor: COLORS.shadow,
@@ -129,8 +129,8 @@ export const homeStyles = StyleSheet.create({
   },
   categoryFilterScrollContent: {
     paddingHorizontal: 16,
-    gap: 12,
-    paddingVertical: 6,
+    gap: 16,
+    paddingVertical: 15,
   },
   categoryButton: {
     flexDirection: "column",
@@ -139,23 +139,30 @@ export const homeStyles = StyleSheet.create({
     backgroundColor: COLORS.card,
     paddingVertical: 12,
     paddingHorizontal: 16,
-    borderRadius: 20,
-    borderWidth: 1,
-    borderColor: COLORS.border,
+    borderRadius: 16,
     minWidth: 80,
-    shadowColor: COLORS.shadow,
+    shadowColor: COLORS.white,
     shadowOffset: {
       width: 0,
       height: 1,
     },
-    shadowOpacity: 0.2,
-    shadowRadius: 3,
-    elevation: 3,
+    shadowOpacity: 0.15,
+    shadowRadius: 1,
+    elevation: 1,
   },
   selectedCategory: {
     backgroundColor: COLORS.primary,
-    borderColor: COLORS.primary,
-    shadowOpacity: 0.15,
+    shadowColor: COLORS.primary,
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.45,
+    shadowRadius: 3,
+    elevation: 4,
+  },
+  pressedCategory: {
+    opacity: 0.7,
   },
   categoryImage: {
     width: 40,
@@ -163,9 +170,11 @@ export const homeStyles = StyleSheet.create({
     borderRadius: 20,
     marginBottom: 4,
     backgroundColor: COLORS.border,
+    // Keep border dimensions stable so Android / expo-image does not blank when toggling selection.
+    borderWidth: 2,
+    borderColor: "transparent",
   },
   selectedCategoryImage: {
-    borderWidth: 2,
     borderColor: COLORS.white,
   },
   categoryText: {
@@ -175,7 +184,11 @@ export const homeStyles = StyleSheet.create({
     textAlign: "center",
   },
   selectedCategoryText: {
-    color: COLORS.white,
+    color: COLORS.border,
+    ...Platform.select({
+      android: { fontWeight: "900" },
+      ios: { fontWeight: "700" },
+    }),
   },
   loadMoreButtonContainer: {
     marginTop: 25,
@@ -184,22 +197,12 @@ export const homeStyles = StyleSheet.create({
   loadMoreButton: {
     width: 50,
     height: 50,
-    borderRadius: 28,
+    borderRadius: 25,
     backgroundColor: COLORS.card,
-    borderWidth: 1.5,
-    borderColor: COLORS.primary,
     alignItems: "center",
     justifyContent: "center",
     alignSelf: "center",
     marginTop: 25,
-    shadowColor: COLORS.primary,
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-    shadowOpacity: 0.2,
-    shadowRadius: 8,
-    elevation: 4,
   },
   loadingMoreContainer: {
     width: 50,
@@ -218,17 +221,15 @@ export const recipeCardStyles = StyleSheet.create({
   container: {
     width: cardWidth,
     backgroundColor: COLORS.card,
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: COLORS.border,
-    shadowColor: COLORS.shadow,
+    borderRadius: 20,
+    shadowColor: COLORS.white + "90",
     shadowOffset: {
       width: 0,
       height: 2,
     },
-    shadowOpacity: 0.2,
-    shadowRadius: 2.5,
-    elevation: 3,
+    shadowOpacity: 0.15,
+    shadowRadius: 1,
+    elevation: 1,
   },
   imageContainer: {
     position: "relative",
@@ -243,20 +244,19 @@ export const recipeCardStyles = StyleSheet.create({
     backgroundColor: COLORS.border,
   },
   content: {
+    flex: 1,
     padding: 12,
-    paddingBottom: 15,
+    justifyContent: "space-between",
   },
   title: {
     fontSize: 15,
     fontWeight: "700",
     color: COLORS.text,
-    marginBottom: 4,
     lineHeight: 20,
   },
   description: {
     fontSize: 12,
     color: COLORS.textLight,
-    marginBottom: 10,
     lineHeight: 16,
   },
   footer: {

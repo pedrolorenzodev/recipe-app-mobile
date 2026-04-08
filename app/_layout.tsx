@@ -52,6 +52,7 @@ function RootLayoutNav(): React.ReactElement | null {
             options={{
               animation: "none",
               presentation: "card",
+              contentStyle: { backgroundColor: "#111111" },
             }}
           />
           <Stack.Screen name="recipe/[id]" />

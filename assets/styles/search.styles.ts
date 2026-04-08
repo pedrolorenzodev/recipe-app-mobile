@@ -1,4 +1,4 @@
-import { StyleSheet } from "react-native";
+import { Platform, StyleSheet } from "react-native";
 import { COLORS } from "../../constants/colors";
 
 export const searchStyles = StyleSheet.create({
@@ -14,19 +14,9 @@ export const searchStyles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     backgroundColor: COLORS.card,
-    borderRadius: 16,
+    borderRadius: 12,
     paddingHorizontal: 16,
-    paddingVertical: 12,
-    borderWidth: 1,
-    borderColor: COLORS.border,
-    shadowColor: COLORS.shadow,
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.05,
-    shadowRadius: 4,
-    elevation: 2,
+    height: 54,
   },
   searchIcon: {
     marginRight: 12,
@@ -35,6 +25,17 @@ export const searchStyles = StyleSheet.create({
     flex: 1,
     fontSize: 16,
     color: COLORS.text,
+    lineHeight: 20,
+    includeFontPadding: false,
+    height: "100%",
+    paddingHorizontal: 0,
+    paddingVertical: 0,
+    ...Platform.select({
+      android: {
+        textAlignVertical: "center",
+      },
+    }),
+    textAlignVertical: "center",
   },
   clearButton: {
     padding: 4,
@@ -56,9 +57,7 @@ export const searchStyles = StyleSheet.create({
     backgroundColor: COLORS.card,
     paddingHorizontal: 16,
     paddingVertical: 8,
-    borderRadius: 20,
-    borderWidth: 1,
-    borderColor: COLORS.border,
+    borderRadius: 16,
   },
   activeQuickFilter: {
     backgroundColor: COLORS.primary,
@@ -107,7 +106,7 @@ export const searchStyles = StyleSheet.create({
   },
   recipesGrid: {
     gap: 16,
-    paddingBottom: 32,
+    paddingBottom: 100,
     paddingVertical: 8,
   },
   row: {

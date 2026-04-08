@@ -27,16 +27,6 @@ export const favoritesStyles = StyleSheet.create({
     paddingVertical: 10,
     borderRadius: 12,
     backgroundColor: COLORS.card,
-    borderWidth: 1,
-    borderColor: COLORS.border,
-    shadowColor: COLORS.shadow,
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
   },
   logoutText: {
     fontSize: 14,
@@ -80,7 +70,7 @@ export const favoritesStyles = StyleSheet.create({
   recipesSection: {
     paddingHorizontal: 16,
     marginTop: 24,
-    paddingBottom: 32,
+    paddingBottom: 100,
   },
   recipesGrid: {
     gap: 14,
@@ -103,9 +93,6 @@ export const favoritesStyles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     marginBottom: 24,
-    borderWidth: 2,
-    borderColor: COLORS.border,
-    borderStyle: "dashed",
   },
   emptyTitle: {
     fontSize: 24,
@@ -132,11 +119,6 @@ export const favoritesStyles = StyleSheet.create({
     marginTop: 16,
     backgroundColor: COLORS.card,
     borderRadius: 16,
-    shadowColor: COLORS.shadow,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
   },
   accountSectionPress: {
     paddingHorizontal: 16,

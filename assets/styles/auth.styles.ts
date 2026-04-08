@@ -54,10 +54,8 @@ export const authStyles = StyleSheet.create({
     paddingVertical: 16,
     paddingHorizontal: 20,
     paddingRight: 50,
-    backgroundColor: COLORS.background,
+    backgroundColor: COLORS.card,
     borderRadius: 12,
-    borderWidth: 1,
-    borderColor: COLORS.border,
   },
   eyeButton: {
     position: "absolute",

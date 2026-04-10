@@ -5,14 +5,15 @@ import { useRouter } from "expo-router";
 import * as WebBrowser from "expo-web-browser";
 import React, { useState } from "react";
 import {
-  Alert,
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
+    ActivityIndicator,
+    Alert,
+    KeyboardAvoidingView,
+    Platform,
+    ScrollView,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { authStyles } from "../../assets/styles/auth.styles";
@@ -38,7 +39,7 @@ const SignUpScreen = (): React.ReactElement => {
     try {
       await WebBrowser.openBrowserAsync(url);
     } catch (error) {
-      console.log("Error opening link:", error);
+      console.error("Error opening link:", error);
     }
   };
 
@@ -145,9 +146,11 @@ const SignUpScreen = (): React.ReactElement => {
               disabled={loading}
               activeOpacity={0.8}
             >
-              <Text style={authStyles.buttonText}>
-                {loading ? "Creating account" : "Sign Up"}
-              </Text>
+              {loading ? (
+                <ActivityIndicator size="small" color={COLORS.card} />
+              ) : (
+                <Text style={authStyles.buttonText}>Sign Up</Text>
+              )}
             </TouchableOpacity>
 
             {/* Sign In Link */}

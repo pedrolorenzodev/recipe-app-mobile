@@ -1,4 +1,4 @@
-import { Dimensions, StyleSheet } from "react-native";
+import { Dimensions, Platform, StyleSheet } from "react-native";
 import { COLORS } from "../../constants/colors";
 
 const { height } = Dimensions.get("window");
@@ -68,14 +68,19 @@ export const authStyles = StyleSheet.create({
     borderRadius: 12,
     marginTop: 20,
     marginBottom: 30,
+    justifyContent: "center",
+    alignItems: "center",
   },
   buttonDisabled: {
     opacity: 0.7,
   },
   buttonText: {
     fontSize: 16,
-    fontWeight: "600",
-    color: COLORS.white,
+    ...Platform.select({
+      android: { fontWeight: 800 },
+      ios: { fontWeight: 700 },
+    }),
+    color: COLORS.card,
     textAlign: "center",
   },
   linkContainer: {

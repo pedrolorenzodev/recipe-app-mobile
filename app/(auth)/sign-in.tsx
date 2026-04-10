@@ -4,14 +4,15 @@ import { Image } from "expo-image";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import {
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
+    ActivityIndicator,
+    KeyboardAvoidingView,
+    Platform,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { authStyles } from "../../assets/styles/auth.styles";
@@ -73,8 +74,8 @@ const SignInScreen = (): React.ReactElement => {
         } as any);
       } else {
         setHasError(true);
-        console.log("Sign in status:", signInAttempt.status);
-        console.log("Sign in attempt:", JSON.stringify(signInAttempt, null, 2));
+        // console.log("Sign in status:", signInAttempt.status);
+        // console.log("Sign in attempt:", JSON.stringify(signInAttempt, null, 2));
       }
     } catch (err: any) {
       setHasError(true);
@@ -157,9 +158,11 @@ const SignInScreen = (): React.ReactElement => {
               disabled={loading}
               activeOpacity={0.8}
             >
-              <Text style={authStyles.buttonText}>
-                {loading ? "Signing In..." : "Sign In"}
-              </Text>
+              {loading ? (
+                <ActivityIndicator size="small" color={COLORS.card} />
+              ) : (
+                <Text style={authStyles.buttonText}>Sign In</Text>
+              )}
             </TouchableOpacity>
 
             <TouchableOpacity

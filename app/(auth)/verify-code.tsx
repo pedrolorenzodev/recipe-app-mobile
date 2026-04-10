@@ -3,14 +3,15 @@ import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
-  Alert,
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
+    ActivityIndicator,
+    Alert,
+    KeyboardAvoidingView,
+    Platform,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { authStyles } from "../../assets/styles/auth.styles";
@@ -252,9 +253,11 @@ const VerifyCodeScreen = (): React.ReactElement => {
               disabled={verifying || code.length !== 6}
               activeOpacity={0.8}
             >
-              <Text style={authStyles.buttonText}>
-                {verifying ? "Verifying..." : "Verify Code"}
-              </Text>
+              {verifying ? (
+                <ActivityIndicator size="small" color={COLORS.card} />
+              ) : (
+                <Text style={authStyles.buttonText}>Verify Code</Text>
+              )}
             </TouchableOpacity>
 
             {/* Back button */}

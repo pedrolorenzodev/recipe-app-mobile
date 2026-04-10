@@ -1,13 +1,19 @@
 import { Ionicons } from "@expo/vector-icons";
 import {
-  BottomSheetBackdrop,
-  BottomSheetModal,
-  BottomSheetView,
+    BottomSheetBackdrop,
+    BottomSheetModal,
+    BottomSheetView,
 } from "@gorhom/bottom-sheet";
 import { useRouter } from "expo-router";
 import * as WebBrowser from "expo-web-browser";
 import React, { forwardRef, useCallback } from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import {
+    Platform,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View,
+} from "react-native";
 import { COLORS } from "../constants/colors";
 
 const PRIVACY_POLICY_URL =
@@ -22,7 +28,7 @@ const AuthBottomSheet = forwardRef<BottomSheetModal>((_, ref) => {
     try {
       await WebBrowser.openBrowserAsync(url);
     } catch (error) {
-      console.log("Error opening link:", error);
+      console.error("Error opening link:", error);
     }
   };
 
@@ -77,7 +83,7 @@ const AuthBottomSheet = forwardRef<BottomSheetModal>((_, ref) => {
           onPress={handleSignIn}
           activeOpacity={0.8}
         >
-          <Ionicons name="log-in-outline" size={22} color={COLORS.white} />
+          <Ionicons name="log-in-outline" size={22} color={COLORS.card} />
           <Text style={styles.signInButtonText}>Sign In</Text>
         </TouchableOpacity>
 
@@ -133,10 +139,18 @@ const styles = StyleSheet.create({
     width: 72,
     height: 72,
     borderRadius: 36,
+    // backgroundColor: COLORS.primary,
     backgroundColor: COLORS.primary + "15",
     justifyContent: "center",
     alignItems: "center",
     marginBottom: 16,
+    shadowColor: COLORS.primary,
+    shadowOffset: {
+      width: 0,
+      height: 0,
+    },
+    shadowOpacity: 0.4,
+    shadowRadius: 8,
   },
   title: {
     fontSize: 26,
@@ -162,23 +176,41 @@ const styles = StyleSheet.create({
     borderRadius: 14,
     width: "100%",
     marginBottom: 12,
+    shadowColor: COLORS.textLight,
+    shadowOffset: {
+      width: 0,
+      height: 0,
+    },
+    shadowOpacity: 0.6,
+    shadowRadius: 2.5,
+    elevation: 4,
   },
   signInButtonText: {
     fontSize: 16,
-    fontWeight: "700",
-    color: COLORS.white,
+    ...Platform.select({
+      android: { fontWeight: 800 },
+      ios: { fontWeight: 700 },
+    }),
+    color: COLORS.card,
+    // color: COLORS.white,
   },
   createAccountButton: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
     gap: 10,
-    backgroundColor: COLORS.white,
+    backgroundColor: COLORS.card,
     paddingVertical: 16,
     borderRadius: 14,
     width: "100%",
-    borderWidth: 1.5,
-    borderColor: COLORS.border,
+    shadowColor: COLORS.textLight,
+    shadowOffset: {
+      width: 0,
+      height: 0,
+    },
+    shadowOpacity: 0.5,
+    shadowRadius: 1.5,
+    elevation: 2,
   },
   createAccountButtonText: {
     fontSize: 16,

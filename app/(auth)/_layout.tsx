@@ -1,6 +1,7 @@
-import React from "react";
-import { Redirect, Stack } from "expo-router";
+import { COLORS } from "@/constants/colors";
 import { useAuth } from "@clerk/clerk-expo";
+import { Redirect, Stack } from "expo-router";
+import React from "react";
 
 export default function AuthRoutesLayout(): React.ReactElement | null {
   const { isSignedIn } = useAuth();
@@ -8,7 +9,12 @@ export default function AuthRoutesLayout(): React.ReactElement | null {
   if (isSignedIn) return <Redirect href={"/" as any} />;
 
   return (
-    <Stack screenOptions={{ headerShown: false }}>
+    <Stack
+      screenOptions={{
+        headerShown: false,
+        contentStyle: { backgroundColor: COLORS.background },
+      }}
+    >
       <Stack.Screen
         name="sign-in"
         options={{

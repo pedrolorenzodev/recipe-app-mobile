@@ -1,8 +1,11 @@
+import { COLORS } from "@/constants/colors";
+import { NAVIGATION_THEME } from "@/constants/navigationTheme";
 import { AuthGateProvider } from "@/contexts/AuthGateContext";
 import { useNotificationObserver } from "@/hooks/useNotificationObserver";
 import { ClerkProvider, useAuth } from "@clerk/clerk-expo";
 import { tokenCache } from "@clerk/clerk-expo/token-cache";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
+import { ThemeProvider } from "@react-navigation/native";
 import * as Notifications from "expo-notifications";
 import { Stack } from "expo-router";
 import React from "react";
@@ -30,8 +33,15 @@ function RootLayoutNav(): React.ReactElement | null {
 
   if (!isLoaded) {
     return (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <ActivityIndicator size="large" />
+      <View
+        style={{
+          flex: 1,
+          justifyContent: "center",
+          alignItems: "center",
+          backgroundColor: COLORS.background,
+        }}
+      >
+        <ActivityIndicator size="large" color={COLORS.primary} />
       </View>
     );
   }
@@ -39,24 +49,30 @@ function RootLayoutNav(): React.ReactElement | null {
   return (
     <BottomSheetModalProvider>
       <AuthGateProvider>
-        <Stack screenOptions={{ headerShown: false }}>
-          <Stack.Screen
-            name="(auth)"
-            options={{
-              animation: "none",
-              presentation: "card",
+        <ThemeProvider value={NAVIGATION_THEME}>
+          <Stack
+            screenOptions={{
+              headerShown: false,
+              contentStyle: { backgroundColor: COLORS.background },
             }}
-          />
-          <Stack.Screen
-            name="(tabs)"
-            options={{
-              animation: "none",
-              presentation: "card",
-              contentStyle: { backgroundColor: "#111111" },
-            }}
-          />
-          <Stack.Screen name="recipe/[id]" />
-        </Stack>
+          >
+            <Stack.Screen
+              name="(auth)"
+              options={{
+                animation: "none",
+                presentation: "card",
+              }}
+            />
+            <Stack.Screen
+              name="(tabs)"
+              options={{
+                animation: "none",
+                presentation: "card",
+              }}
+            />
+            <Stack.Screen name="recipe/[id]" />
+          </Stack>
+        </ThemeProvider>
       </AuthGateProvider>
     </BottomSheetModalProvider>
   );
@@ -64,7 +80,9 @@ function RootLayoutNav(): React.ReactElement | null {
 
 export default function RootLayout(): React.ReactElement {
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
+    <GestureHandlerRootView
+      style={{ flex: 1, backgroundColor: COLORS.background }}
+    >
       <ClerkProvider tokenCache={tokenCache} publishableKey={publishableKey}>
         <RootLayoutNav />
       </ClerkProvider>

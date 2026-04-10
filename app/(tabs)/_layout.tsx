@@ -14,6 +14,7 @@ const TabsLayout = (): React.ReactElement => {
     <Tabs
       screenOptions={{
         headerShown: false,
+        sceneStyle: { backgroundColor: COLORS.background },
         tabBarActiveTintColor: COLORS.primary,
         tabBarInactiveTintColor: COLORS.textLight,
         tabBarButton: (props: any) => (

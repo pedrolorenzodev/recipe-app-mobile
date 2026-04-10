@@ -64,6 +64,14 @@ const RecipeDetailScreen = (): React.ReactElement => {
     );
   });
 
+  const formatedInstructions = (instruction: string) => {
+    return instruction
+      .split(".")
+      .map((part) => part.trim())
+      .filter(Boolean)
+      .join(".\n");
+  };
+
   useEffect(() => {
     if (!initialCheck.current) return;
 
@@ -439,7 +447,7 @@ const RecipeDetailScreen = (): React.ReactElement => {
 
                   <View style={recipeDetailStyles.instructionContent}>
                     <Text style={recipeDetailStyles.instructionText}>
-                      {instruction} {/* FIXME: */}
+                      {formatedInstructions(instruction)}
                     </Text>
                     <View style={recipeDetailStyles.instructionFooter}>
                       <Text style={recipeDetailStyles.stepLabel}>

@@ -1,3 +1,4 @@
+import LoadingSpinner from "@/components/LoadingSpinner";
 import { Ionicons } from "@expo/vector-icons";
 import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
@@ -21,7 +22,6 @@ import {
     homeStyles,
 } from "../../assets/styles/home.styles";
 import CategoryFilter from "../../components/CategoryFilter";
-import LoadingSpinner from "../../components/LoadingSpinner";
 import RecipeCard from "../../components/RecipeCard";
 import RecipeGridSkeleton from "../../components/RecipeGridSkeleton";
 import { COLORS } from "../../constants/colors";
@@ -81,7 +81,7 @@ const HomeScreen = (): React.ReactElement => {
         .filter((meal): meal is Recipe => meal !== null);
       setFeaturedRecipes(transformedFeatured);
     } catch (error) {
-      console.log("Error loading the data", error);
+      console.error("Error loading the data", error);
     } finally {
       setLoading(false);
     }
@@ -305,7 +305,7 @@ const HomeScreen = (): React.ReactElement => {
                       source={{ uri: featuredRecipe.image }}
                       style={homeStyles.featuredImage}
                       contentFit="cover"
-                      transition={500}
+                      // transition={500}
                     />
                     <LinearGradient
                       colors={[

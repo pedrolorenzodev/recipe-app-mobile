@@ -39,6 +39,26 @@ export default function RecipeCard({
     router.navigate(`/recipe/${recipe.id}` as any);
   };
 
+  const getCleanDescription = (description?: string | null): string => {
+    if (!description) return "";
+
+    let cleaned = description.trim();
+
+    // "Step 1", "STEP 1"
+    cleaned = cleaned.replace(/^step\s*\d+[\s:.-]*/i, "");
+    // "1\n", "2\n"
+    cleaned = cleaned.replace(/^\d+\s*\n+/, "");
+    // "1." or "2)"
+    cleaned = cleaned.replace(/^\d+\s*[\.\)-]\s*/, "");
+    // checkbox-like symbols
+    cleaned = cleaned.replace(/^[▢•▪◦●]\s*/, "");
+
+    cleaned = cleaned.trim();
+
+    return cleaned;
+  };
+  const filteredDescription = getCleanDescription(recipe.description)
+
   return (
     <Pressable
       onPress={handlePress}
@@ -65,9 +85,9 @@ export default function RecipeCard({
           <Text style={recipeCardStyles.title} numberOfLines={2}>
             {recipe.title}
           </Text>
-          {recipe.description && (
+          {filteredDescription && (
             <Text style={recipeCardStyles.description} numberOfLines={2}>
-              {recipe.description}
+              {filteredDescription}
             </Text>
           )}
 

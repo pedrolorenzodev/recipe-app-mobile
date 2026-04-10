@@ -2,7 +2,7 @@ import { Dimensions, Platform, StyleSheet } from "react-native";
 import { COLORS } from "../../constants/colors";
 
 const { width } = Dimensions.get("window");
-const cardWidth = (width - 48) / 2;
+export const RECIPE_CARD_WIDTH = (width - 48) / 2;
 
 // Carousel dimensions (not in StyleSheet)
 export const CAROUSEL_WIDTH = width;
@@ -23,30 +23,33 @@ export const homeStyles = StyleSheet.create({
     width: width - 40,
     marginHorizontal: 20,
     borderRadius: 22,
-    overflow: "hidden",
+    // overflow: "hidden",
     backgroundColor: COLORS.card,
-    shadowColor: COLORS.shadow,
+    shadowColor: COLORS.primary,
     shadowOffset: {
       width: 0,
-      height: 12,
+      height: 0,
     },
     shadowOpacity: 0.2,
-    shadowRadius: 16,
-    elevation: 12,
+    shadowRadius: 3.5,
+    elevation: 3,
   },
   featuredImageContainer: {
     height: 240,
-    backgroundColor: COLORS.primary,
+    backgroundColor: COLORS.card,
     position: "relative",
+    overflow: "hidden",
+    borderRadius: 22,
   },
   featuredImage: {
-    width: "100%",
-    height: "100%",
+    ...StyleSheet.absoluteFillObject,
+    borderRadius: 22,
   },
   featuredOverlay: {
     ...StyleSheet.absoluteFillObject,
     justifyContent: "space-between",
     padding: 20,
+    borderRadius: 22,
   },
   featuredBadge: {
     backgroundColor: COLORS.textLight + "90",
@@ -125,7 +128,7 @@ export const homeStyles = StyleSheet.create({
     textAlign: "center",
   },
   categoryFilterContainer: {
-    marginVertical: 16,
+    marginVertical: 5,
   },
   categoryFilterScrollContent: {
     paddingHorizontal: 16,
@@ -146,9 +149,9 @@ export const homeStyles = StyleSheet.create({
       width: 0,
       height: 1,
     },
-    shadowOpacity: 0.15,
+    shadowOpacity: 0.3,
     shadowRadius: 1,
-    elevation: 1,
+    elevation: 2.5,
   },
   selectedCategory: {
     backgroundColor: COLORS.primary,
@@ -175,7 +178,7 @@ export const homeStyles = StyleSheet.create({
     borderColor: "transparent",
   },
   selectedCategoryImage: {
-    borderColor: COLORS.white,
+    borderColor: COLORS.border,
   },
   categoryText: {
     fontSize: 12,
@@ -186,8 +189,8 @@ export const homeStyles = StyleSheet.create({
   selectedCategoryText: {
     color: COLORS.border,
     ...Platform.select({
-      android: { fontWeight: "900" },
-      ios: { fontWeight: "700" },
+      android: { fontWeight: 900 },
+      ios: { fontWeight: 700 },
     }),
   },
   loadMoreButtonContainer: {
@@ -219,7 +222,7 @@ export const homeStyles = StyleSheet.create({
 
 export const recipeCardStyles = StyleSheet.create({
   container: {
-    width: cardWidth,
+    width: RECIPE_CARD_WIDTH,
     backgroundColor: COLORS.card,
     borderRadius: 20,
     shadowColor: COLORS.white + "90",

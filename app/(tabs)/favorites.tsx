@@ -73,7 +73,7 @@ const FavoritesScreen = (): React.ReactElement => {
 
       setFavoriteRecipes(transformedFavorites);
     } catch (error) {
-      console.log("Error loading favorites", error);
+      console.error("Error loading favorites", error);
       Alert.alert("Error", "Failed to load favorites");
     }
   }, [user?.id]);
@@ -112,7 +112,7 @@ const FavoritesScreen = (): React.ReactElement => {
     try {
       await WebBrowser.openBrowserAsync(url);
     } catch (error) {
-      console.log("Error opening link:", error);
+      console.error("Error opening link:", error);
       Alert.alert("Error", "Could not open link");
     }
   };

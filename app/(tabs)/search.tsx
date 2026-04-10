@@ -1,12 +1,12 @@
 import { Ionicons } from "@expo/vector-icons";
 import React, { useEffect, useState } from "react";
 import {
-  FlatList,
-  StatusBar,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
+    FlatList,
+    StatusBar,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { searchStyles } from "../../assets/styles/search.styles";
@@ -129,9 +129,11 @@ const SearchScreen = (): React.ReactElement => {
             {searchQuery ? `Results for "${searchQuery}"` : "Popular Recipes"}
           </Text>
           <View style={searchStyles.resultsCountContainer}>
-            <Text style={searchStyles.resultsCount}>
-              {recipes.length} found
-            </Text>
+            {!loading && !initialLoading && (
+              <Text style={searchStyles.resultsCount}>
+                {recipes.length} found
+              </Text>
+            )}
           </View>
         </View>
 

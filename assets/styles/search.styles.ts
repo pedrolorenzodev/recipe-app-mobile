@@ -1,4 +1,4 @@
-import { Platform, StyleSheet } from "react-native";
+import { StyleSheet } from "react-native";
 import { COLORS } from "../../constants/colors";
 
 export const searchStyles = StyleSheet.create({
@@ -30,11 +30,6 @@ export const searchStyles = StyleSheet.create({
     height: "100%",
     paddingHorizontal: 0,
     paddingVertical: 0,
-    ...Platform.select({
-      android: {
-        textAlignVertical: "center",
-      },
-    }),
     textAlignVertical: "center",
   },
   clearButton: {

@@ -1,7 +1,31 @@
-import React from "react";
+import { LinearGradient } from "expo-linear-gradient";
+import React, { useEffect } from "react";
 import { StyleSheet, View } from "react-native";
-import { recipeCardStyles } from "../assets/styles/home.styles";
-import ShimmerView from "./ShimmerView";
+import Animated, {
+  Easing,
+  cancelAnimation,
+  useAnimatedStyle,
+  useSharedValue,
+  withRepeat,
+  withTiming,
+} from "react-native-reanimated";
+import {
+  RECIPE_CARD_WIDTH,
+  recipeCardStyles,
+} from "../assets/styles/home.styles";
+import { COLORS } from "../constants/colors";
+import SkeletonBlock from "./SkeletonBlock";
+
+const SHIMMER_WIDTH = RECIPE_CARD_WIDTH * 0.55;
+const SHIMMER_DURATION = 1800;
+const SHIMMER_COLORS = [
+  "rgba(255,255,255,0)",
+  "rgba(255,255,255,0.015)",
+  "rgba(255,255,255,0.035)",
+  "rgba(255,255,255,0.015)",
+  "rgba(255,255,255,0)",
+] as const;
+const AnimatedLinearGradient = Animated.createAnimatedComponent(LinearGradient);
 
 interface RecipeCardSkeletonProps {
   showDescription?: boolean;
@@ -11,42 +35,76 @@ export default function RecipeCardSkeleton({
   showDescription = true,
 }: RecipeCardSkeletonProps): React.ReactElement {
   const cardHeight = showDescription ? 260 : 230;
+  const shimmerTranslateX = useSharedValue(-SHIMMER_WIDTH);
+
+  useEffect(() => {
+    shimmerTranslateX.set(
+      withRepeat(
+        withTiming(RECIPE_CARD_WIDTH, {
+          duration: SHIMMER_DURATION,
+          easing: Easing.linear,
+        }),
+        -1,
+        false,
+      ),
+    );
+
+    return () => {
+      cancelAnimation(shimmerTranslateX);
+    };
+  }, [shimmerTranslateX]);
+
+  const shimmerStyle = useAnimatedStyle(() => ({
+    transform: [{ translateX: shimmerTranslateX.get() }],
+  }));
 
   return (
     <View style={[recipeCardStyles.container, { minHeight: cardHeight }]}>
-      {/* Image skeleton */}
-      <ShimmerView style={skeletonStyles.image} />
+      <View style={skeletonStyles.surface}>
+        <SkeletonBlock variant="image" style={skeletonStyles.image} />
 
-      <View style={recipeCardStyles.content}>
-        {/* Title skeleton (2 lines) */}
-        <ShimmerView style={skeletonStyles.titleLine1} />
-        <ShimmerView style={skeletonStyles.titleLine2} />
+        <View style={recipeCardStyles.content}>
+          <SkeletonBlock style={skeletonStyles.titleLine1} />
+          <SkeletonBlock style={skeletonStyles.titleLine2} />
 
-        {/* Description skeleton (2 lines) - conditional */}
-        {showDescription && (
-          <>
-            <ShimmerView style={skeletonStyles.descLine1} />
-            <ShimmerView style={skeletonStyles.descLine2} />
-          </>
-        )}
+          {showDescription && (
+            <>
+              <SkeletonBlock style={skeletonStyles.descLine1} />
+              <SkeletonBlock style={skeletonStyles.descLine2} />
+            </>
+          )}
 
-        {/* Footer skeleton */}
-        <View style={recipeCardStyles.footer}>
-          <View style={skeletonStyles.row}>
-            <ShimmerView style={skeletonStyles.icon} />
-            <ShimmerView style={skeletonStyles.timeText} />
-          </View>
-          <View style={skeletonStyles.row}>
-            <ShimmerView style={skeletonStyles.icon} />
-            <ShimmerView style={skeletonStyles.servingsText} />
+          <View style={recipeCardStyles.footer}>
+            <View style={skeletonStyles.row}>
+              <SkeletonBlock style={skeletonStyles.icon} />
+              <SkeletonBlock style={skeletonStyles.timeText} />
+            </View>
+            <View style={skeletonStyles.row}>
+              <SkeletonBlock style={skeletonStyles.icon} />
+              <SkeletonBlock style={skeletonStyles.servingsText} />
+            </View>
           </View>
         </View>
+
+        <AnimatedLinearGradient
+          pointerEvents="none"
+          colors={SHIMMER_COLORS}
+          start={{ x: 0, y: 0.5 }}
+          end={{ x: 1, y: 0.5 }}
+          style={[skeletonStyles.shimmer, shimmerStyle]}
+        />
       </View>
     </View>
   );
 }
 
 const skeletonStyles = StyleSheet.create({
+  surface: {
+    flex: 1,
+    borderRadius: 20,
+    overflow: "hidden",
+    backgroundColor: COLORS.card,
+  },
   image: {
     height: 140,
     borderTopLeftRadius: 15,
@@ -90,5 +148,11 @@ const skeletonStyles = StyleSheet.create({
   servingsText: {
     width: 20,
     height: 11,
+  },
+  shimmer: {
+    position: "absolute",
+    top: 0,
+    bottom: 0,
+    width: SHIMMER_WIDTH,
   },
 });
